@@ -395,3 +395,39 @@ def account_view(request):
 
 def not_found_view(request, exception=None):
     return render(request, "pages/404.html", status=404)
+
+
+def robots_txt_view(request):
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        f"Sitemap: {request.build_absolute_uri('/sitemap.xml')}"
+    ]
+    from django.http import HttpResponse
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def sitemap_xml_view(request):
+    base_url = request.build_absolute_uri("/").rstrip("/")
+    static_routes = ["", "/about/", "/shop/", "/contact/", "/faq/"]
+    urls = [f"{base_url}{r}" for r in static_routes]
+
+    for cat in NavCategory.objects.all():
+        urls.append(f"{base_url}/category/{cat.slug}/")
+
+    for cat in Category.objects.all():
+        urls.append(f"{base_url}/{cat.slug}/")
+
+    for prod in Product.objects.all():
+        urls.append(f"{base_url}/product/{prod.slug}/")
+
+    xml_lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ]
+    for u in urls:
+        xml_lines.append(f"  <url><loc>{u}</loc><changefreq>weekly</changefreq></url>")
+    xml_lines.append('</urlset>')
+
+    from django.http import HttpResponse
+    return HttpResponse("\n".join(xml_lines), content_type="application/xml")

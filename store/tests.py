@@ -73,6 +73,16 @@ class StoreViewsTestCase(TestCase):
             res = self.client.get(reverse(route))
             self.assertEqual(res.status_code, 200)
 
+    def test_seo_endpoints(self):
+        r_res = self.client.get(reverse("robots_txt"))
+        self.assertEqual(r_res.status_code, 200)
+        self.assertIn("User-agent: *", r_res.content.decode("utf-8"))
+
+        s_res = self.client.get(reverse("sitemap_xml"))
+        self.assertEqual(s_res.status_code, 200)
+        self.assertIn("<urlset", s_res.content.decode("utf-8"))
+        self.assertIn("bedroom-sets-1", s_res.content.decode("utf-8"))
+
     def test_search_api(self):
         response = self.client.get(reverse("search_api") + "?q=Design")
         self.assertEqual(response.status_code, 200)

@@ -9,6 +9,8 @@ urlpatterns = [
     path("about/", views.about_view, name="about"),
     path("contact/", views.contact_view, name="contact"),
     path("faq/", views.faq_view, name="faq"),
+    path("robots.txt", views.robots_txt_view, name="robots_txt"),
+    path("sitemap.xml", views.sitemap_xml_view, name="sitemap_xml"),
     path("api/search/", views.search_api_view, name="search_api"),
 
     # Shopping Cart & Checkout
