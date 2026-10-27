@@ -1,0 +1,23 @@
+<div id="search-modal" class="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-ink/85 px-4 pt-20 backdrop-blur-md sm:pt-24 opacity-0 pointer-events-none transition-opacity duration-300" role="dialog" aria-modal="true" aria-label="Search products">
+  <button type="button" id="close-search-btn" class="absolute top-6 right-6 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white transition-colors hover:border-gold hover:text-gold" aria-label="Close search">
+    {% include "includes/icons/close.html" with class="h-4 w-4" %}
+  </button>
+
+  <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+    <p class="eyebrow">
+      <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+      Instant Search
+    </p>
+    <form action="{% url 'shop' %}" method="get" id="search-form">
+      <label class="flex items-center gap-3 border-b-2 border-ink/15 pb-3 focus-within:border-gold">
+        <span class="sr-only">Search products</span>
+        {% include "includes/icons/search.html" with class="h-5 w-5 shrink-0 text-gold-deep" %}
+        <input type="search" name="q" id="search-modal-input" placeholder="Search bedroom sets, wardrobes, side tables..." class="w-full bg-transparent font-display text-xl text-ink placeholder:text-stone/60 focus:outline-none sm:text-2xl" autocomplete="off">
+      </label>
+    </form>
+
+    <div id="search-results-box" class="mt-5 hidden">
+      <ul id="search-results-list" class="max-h-[46vh] space-y-2 overflow-y-auto pr-1"></ul>
+    </div>
+  </div>
+</div>

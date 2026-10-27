@@ -1,0 +1,11 @@
+<nav id="category-nav-scroller" aria-label="Categories" class="no-scrollbar sticky top-16 z-40 flex h-12 w-full snap-x snap-proximity items-center gap-x-8 overflow-x-auto border-b border-line bg-white px-4 sm:gap-x-10 sm:px-6 md:top-[76px] md:h-14 lg:snap-none lg:justify-center lg:gap-x-12 lg:overflow-visible lg:px-8 xl:px-12">
+  {% for cat in HEADER_CATEGORIES %}
+    {% url 'nav_category' cat.slug as cat_url %}
+    <a href="{{ cat_url }}"
+       {% if current_path == cat_url %}aria-current="page"{% endif %}
+       class="group relative flex shrink-0 snap-start cursor-pointer items-center self-stretch whitespace-nowrap text-[15px] font-medium tracking-[0.01em] transition-colors duration-200 md:text-[16px] {% if current_path == cat_url %}text-gold-deep{% else %}text-ink/70 hover:text-gold-deep{% endif %}">
+      {{ cat.label }}
+      <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-gold transition-transform duration-200 ease-out {% if current_path == cat_url %}scale-x-100{% else %}scale-x-0 group-hover:scale-x-100{% endif %}"></span>
+    </a>
+  {% endfor %}
+</nav>

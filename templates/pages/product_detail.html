@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} | {{ SITE.name }}{% endblock %}
+{% block description %}{{ product.description|default:product.category.short }}{% endblock %}
+
+{% block content %}
+<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
+    <span class="text-mist">/</span>
+    <a href="{% url 'shop' %}" class="hover:text-gold-deep transition-colors">Shop</a>
+    <span class="text-mist">/</span>
+    <a href="{% url 'direct_category' product.category.slug %}" class="hover:text-gold-deep transition-colors">{{ product.category.name }}</a>
+    <span class="text-mist">/</span>
+    <span class="font-medium text-ink">{{ product.name }}</span>
+  </div>
+</nav>
+
+<section class="bg-cream py-12 sm:py-16 lg:py-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
+    <!-- Gallery Column -->
+    <div>
+      <!-- Main Photo Frame -->
+      <div id="main-photo-container" class="group relative block aspect-[4/5] w-full overflow-hidden rounded-[24px] bg-beige text-left shadow-soft ring-1 ring-line">
+        <img id="main-product-img" src="{% static product.image|slice:'1:' %}" alt="{{ product.name }}" class="h-full w-full object-contain p-4 transition-transform duration-300 ease-out group-hover:scale-[1.04] sm:p-6" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+        <span class="pointer-events-none absolute bottom-4 left-4 rounded-full bg-ink/75 px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
+          {{ product.category.name }}
+        </span>
+      </div>
+
+      <!-- Thumbnails -->
+      {% if gallery|length > 1 %}
+        <div class="mt-4 grid grid-cols-4 gap-2.5 sm:grid-cols-5 lg:grid-cols-8 lg:gap-3">
+          {% for img in gallery %}
+            <button type="button" class="gallery-thumb relative aspect-square overflow-hidden rounded-xl bg-beige ring-2 transition-all duration-300 {% if forloop.first %}ring-gold shadow-gold{% else %}ring-transparent opacity-60 hover:opacity-100{% endif %}" data-src="{% static img|slice:'1:' %}">
+              <img src="{% static img|slice:'1:' %}" alt="" class="h-full w-full object-contain p-1.5" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Details Column -->
+    <div>
+      <p class="eyebrow">
+        <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+        {{ product.category.name }}
+      </p>
+
+      <h1 class="text-[1.9rem] leading-[1.14] font-semibold text-balance sm:text-4xl lg:text-5xl text-ink">
+        {{ product.name }}
+      </h1>
+
+      <p class="mt-6 font-display text-2xl font-semibold tracking-wide text-gold-deep sm:text-3xl">
+        {{ product.formatted_price }}
+      </p>
+
+      <p class="mt-2 text-sm text-stone">
+        {% if product.price %}
+          Price includes standard showroom finish and hardware.
+        {% else %}
+          Contact us for exact sizing and custom wood finish pricing.
+        {% endif %}
+      </p>
+
+      <p class="mt-8 leading-relaxed text-stone">
+        {{ product.description|default:product.category.description }}
+      </p>
+
+      <!-- Specifications Card -->
+      <div class="mt-10 overflow-hidden rounded-2xl bg-linen shadow-soft ring-1 ring-line">
+        <div class="flex items-start gap-4 px-6 py-5">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9"/><path d="m18 15 4-4"/></svg>
+          </span>
+          <div>
+            <p class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Material</p>
+            <p class="mt-1 text-sm font-medium text-ink">{{ product.material|default:product.category.material }}</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4 px-6 py-5 border-t border-line">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/></svg>
+          </span>
+          <div>
+            <p class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Dimensions</p>
+            <p class="mt-1 text-sm font-medium text-ink">{{ product.dimensions|default:product.category.dimensions }}</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4 px-6 py-5 border-t border-line">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
+            {% include "includes/icons/truck.html" with class="h-5 w-5" %}
+          </span>
+          <div>
+            <p class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Delivery</p>
+            <p class="mt-1 text-sm font-medium text-ink">{{ product.delivery_time }}</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4 px-6 py-5 border-t border-line">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </span>
+          <div>
+            <p class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Availability</p>
+            <p class="mt-1 text-sm font-medium text-ink">{{ product.availability }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add to Cart Form + Call Actions -->
+      <div class="mt-9 flex flex-wrap gap-4">
+        <form action="{% url 'add_to_cart' product.id %}" method="post" class="flex items-center gap-3">
+          {% csrf_token %}
+          <input type="number" name="quantity" value="1" min="1" max="99" class="w-16 rounded-full border border-line bg-linen px-3 py-3 text-center text-sm font-semibold text-ink focus:border-gold focus:outline-none">
+          <button type="submit" class="btn-dark">
+            {% include "includes/icons/cart.html" with class="h-4 w-4" %}
+            Add to Cart
+          </button>
+        </form>
+
+        <a href="tel:+{{ SITE.phone_intl }}" class="btn-gold">
+          {% include "includes/icons/phone.html" with class="h-4 w-4" %}
+          Call {{ SITE.phone_display }}
+        </a>
+
+        <a href="{% url 'contact' %}" class="btn-outline-dark">
+          Inquire Now
+        </a>
+      </div>
+
+      <p class="mt-5 text-xs leading-relaxed text-stone">
+        Need custom dimensions or a specific wood stain? We make customized pieces to order for your space.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Related Products -->
+{% if related_products %}
+<section class="bg-linen py-16 sm:py-20 border-t border-line">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
+    <div class="mb-10 flex items-center justify-between">
+      <h2 class="title-md">More from {{ product.category.name }}</h2>
+      <a href="{% url 'direct_category' product.category.slug %}" class="link-underline text-xs font-semibold tracking-wider text-gold-deep uppercase">View Category →</a>
+    </div>
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+      {% for rel in related_products %}
+        {% include "includes/product_card.html" with product=rel %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const thumbs = document.querySelectorAll(".gallery-thumb");
+  const mainImg = document.getElementById("main-product-img");
+  thumbs.forEach(t => {
+    t.addEventListener("click", () => {
+      thumbs.forEach(other => {
+        other.classList.remove("ring-gold", "shadow-gold");
+        other.classList.add("ring-transparent", "opacity-60");
+      });
+      t.classList.remove("ring-transparent", "opacity-60");
+      t.classList.add("ring-gold", "shadow-gold");
+      if (mainImg) mainImg.src = t.dataset.src;
+    });
+  });
+});
+</script>
+{% endblock %}

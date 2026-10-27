@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}My Account | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+{% include "includes/page_hero.html" with title="My Account" eyebrow="Customer Portal" description="View your past orders, delivery statuses, and profile information." image="/banners/1.webp" %}
+
+<section class="bg-cream py-12 sm:py-16 lg:py-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
+    <div class="grid gap-10 lg:grid-cols-[300px_1fr]">
+      <!-- Profile Card -->
+      <div>
+        <div class="rounded-3xl border border-line bg-white p-7 shadow-soft">
+          <div class="flex items-center gap-4 border-b border-line pb-6">
+            <span class="flex h-14 w-14 items-center justify-center rounded-full bg-gold/15 font-display text-xl font-bold text-gold-deep">
+              {{ user.username|slice:":1"|upper }}
+            </span>
+            <div>
+              <h2 class="font-display text-lg font-bold text-ink">{{ user.get_full_name|default:user.username }}</h2>
+              <p class="text-xs text-stone">{{ user.email }}</p>
+            </div>
+          </div>
+          <div class="mt-6 space-y-3">
+            <a href="{% url 'logout' %}" class="btn-outline-dark w-full text-center">
+              Log Out
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order History -->
+      <div>
+        <div class="rounded-3xl border border-line bg-white p-7 shadow-soft">
+          <h3 class="font-display text-xl font-bold text-ink mb-6">Order History</h3>
+          {% if orders %}
+            <div class="space-y-6">
+              {% for order in orders %}
+                <div class="rounded-2xl border border-line bg-linen/50 p-5">
+                  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4 text-xs">
+                    <div>
+                      <span class="font-bold text-ink">Order #{{ order.id }}</span>
+                      <span class="text-stone ml-2">Placed on {{ order.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div>
+                      <span class="rounded-full bg-gold-pale px-3 py-1 font-semibold text-gold-deep uppercase tracking-wider text-[10px]">
+                        {{ order.get_status_display }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 space-y-2">
+                    {% for it in order.items.all %}
+                      <div class="flex justify-between text-xs text-stone">
+                        <span>{{ it.quantity }}x {{ it.product_name }}</span>
+                        <span class="font-semibold text-ink">
+                          {% if it.price %}Rs. {{ it.price|floatformat:"0" }}{% else %}On Request{% endif %}
+                        </span>
+                      </div>
+                    {% endfor %}
+                  </div>
+
+                  <div class="mt-4 pt-3 border-t border-line flex justify-between items-baseline text-sm">
+                    <span class="font-semibold text-ink">Total</span>
+                    <span class="font-bold text-gold-deep">
+                      {% if order.total_amount %}Rs. {{ order.total_amount|floatformat:"0" }}{% else %}Price on Request{% endif %}
+                    </span>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-sm text-stone py-6 text-center">You have not placed any furniture orders yet.</p>
+            <div class="text-center">
+              <a href="{% url 'shop' %}" class="btn-gold inline-flex">Browse Collections</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

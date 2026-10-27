@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Checkout | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+{% include "includes/page_hero.html" with title="Complete Your Order" eyebrow="Direct Showroom Delivery" description="Provide your delivery details. We assemble all furniture upon arrival in Karachi." image="/banners/2.webp" %}
+
+<section class="bg-cream py-12 sm:py-16 lg:py-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 grid gap-12 lg:grid-cols-[1fr_420px]">
+    <!-- Checkout Form -->
+    <div class="rounded-3xl bg-white p-7 sm:p-10 shadow-soft border border-line">
+      <h2 class="font-display text-2xl font-bold text-ink">Shipping & Contact Details</h2>
+      <p class="mt-2 text-sm text-stone">Please ensure your contact number is active for delivery confirmation.</p>
+
+      <form method="post" action="{% url 'checkout' %}" class="mt-8 space-y-5">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Full Name *</label>
+          {{ form.full_name }}
+          {% if form.full_name.errors %}<p class="text-xs text-red-600 mt-1">{{ form.full_name.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Active Phone Number *</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}<p class="text-xs text-red-600 mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Email Address</label>
+            {{ form.email }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">City *</label>
+          {{ form.city }}
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Street Address & House / Flat # *</label>
+          {{ form.address }}
+          {% if form.address.errors %}<p class="text-xs text-red-600 mt-1">{{ form.address.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Order Notes / Custom Requests</label>
+          {{ form.notes }}
+        </div>
+
+        <div class="pt-6 border-t border-line">
+          <button type="submit" class="btn-gold w-full text-center text-sm py-4">
+            Confirm & Place Furniture Order
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Order Items Review -->
+    <div>
+      <div class="rounded-3xl bg-white p-7 shadow-soft border border-line sticky top-36">
+        <h3 class="font-display text-xl font-bold text-ink mb-6">Review Selected Pieces</h3>
+        <div class="space-y-4 max-h-[360px] overflow-y-auto pr-1 border-b border-line pb-6">
+          {% for item in items %}
+            <div class="flex items-center gap-4">
+              <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-beige">
+                <img src="{% static item.product.image|slice:'1:' %}" alt="{{ item.product.name }}" class="h-full w-full object-contain p-1" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+              </div>
+              <div class="min-w-0 flex-1">
+                <h4 class="font-display text-sm font-semibold text-ink truncate">{{ item.product.name }}</h4>
+                <p class="text-xs text-stone">Qty: {{ item.quantity }}</p>
+              </div>
+              <span class="text-xs font-bold text-gold-deep">
+                {% if item.subtotal %}Rs. {{ item.subtotal|floatformat:"0" }}{% else %}On Request{% endif %}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="mt-6 flex justify-between items-baseline">
+          <span class="font-display text-base font-semibold text-ink">Total Order Amount</span>
+          <span class="font-display text-2xl font-bold text-gold-deep">
+            {% if cart.total_price %}
+              Rs. {{ cart.total_price|floatformat:"0" }}
+            {% else %}
+              Quote on Request
+            {% endif %}
+          </span>
+        </div>
+        <p class="mt-3 text-xs text-stone">Payment method: Cash on Delivery or Showroom Bank Transfer upon dispatch confirmation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

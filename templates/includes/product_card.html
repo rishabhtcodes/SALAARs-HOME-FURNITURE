@@ -1,0 +1,44 @@
+{% load static %}
+<article class="group flex h-full min-w-0 flex-col overflow-hidden rounded-[16px] bg-white shadow-soft ring-1 ring-line transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:ring-gold/40 sm:rounded-[20px]">
+  <!-- Image Frame -->
+  <a href="{% url 'product_detail' product.slug %}" class="relative block aspect-[4/3] overflow-hidden bg-beige" aria-label="View details – {{ product.name }}">
+    <img src="{% static product.image|slice:'1:' %}"
+         alt="{{ product.name }} – {{ product.category.name }} – SALAAR's HOME Karachi"
+         loading="lazy"
+         class="h-full w-full object-contain p-3 transition-transform duration-300 ease-out group-hover:scale-[1.03] sm:p-5"
+         onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+    <span class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true"></span>
+  </a>
+
+  <!-- Content -->
+  <div class="flex flex-1 flex-col p-3.5 sm:p-6">
+    <p class="truncate text-[9px] font-semibold tracking-[0.2em] text-stone uppercase sm:text-[10px] sm:tracking-[0.22em]">
+      {{ product.category.name }}
+    </p>
+
+    <h3 class="mt-1.5 font-display text-[15px] leading-snug font-semibold text-ink sm:mt-2 sm:text-xl">
+      <a href="{% url 'product_detail' product.slug %}" class="transition-colors duration-200 hover:text-gold-deep">
+        {{ product.name }}
+      </a>
+    </h3>
+
+    <p class="mt-1.5 text-sm font-semibold text-gold-deep sm:mt-2 sm:text-[15px]">
+      {{ product.formatted_price }}
+    </p>
+
+    <p class="mt-2 flex items-center gap-1.5 text-[11px] text-stone sm:mt-2.5 sm:text-xs">
+      {% include "includes/icons/truck.html" with class="h-3.5 w-3.5 shrink-0 text-gold-deep" %}
+      <span class="truncate">
+        Delivery: {{ product.delivery_time }}
+      </span>
+    </p>
+
+    <!-- Action Button -->
+    <div class="mt-auto pt-4 sm:pt-5">
+      <a href="{% url 'product_detail' product.slug %}" class="btn-card w-full">
+        View details
+        {% include "includes/icons/arrow-right.html" with class="h-3.5 w-3.5 shrink-0" %}
+      </a>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Shopping Cart | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+{% include "includes/page_hero.html" with title="Your Shopping Cart" eyebrow="Review Pieces" description="Handcrafted furniture pieces selected for your home." image="/banners/1.webp" %}
+
+<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
+    <span class="text-mist">/</span>
+    <span class="font-medium text-ink">Shopping Cart</span>
+  </div>
+</nav>
+
+<section class="bg-cream py-12 sm:py-16 lg:py-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
+    {% if items %}
+      <div class="grid gap-12 lg:grid-cols-[1fr_380px]">
+        <!-- Cart Items List -->
+        <div class="space-y-4">
+          {% for item in items %}
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 rounded-2xl bg-white p-5 shadow-soft border border-line">
+              <div class="flex items-center gap-4">
+                <a href="{% url 'product_detail' item.product.slug %}" class="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-beige">
+                  <img src="{% static item.product.image|slice:'1:' %}" alt="{{ item.product.name }}" class="h-full w-full object-contain p-2" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+                </a>
+                <div>
+                  <p class="text-[10px] font-semibold tracking-wider text-stone uppercase">{{ item.product.category.name }}</p>
+                  <h3 class="font-display text-base font-semibold text-ink sm:text-lg">
+                    <a href="{% url 'product_detail' item.product.slug %}" class="hover:text-gold-deep">{{ item.product.name }}</a>
+                  </h3>
+                  <p class="text-sm font-semibold text-gold-deep">{{ item.product.formatted_price }}</p>
+                </div>
+              </div>
+
+              <!-- Quantity and Subtotal -->
+              <div class="flex items-center justify-between w-full sm:w-auto gap-6">
+                <form action="{% url 'update_cart' item.id %}" method="post" class="flex items-center gap-2">
+                  {% csrf_token %}
+                  <label class="text-xs text-stone">Qty:</label>
+                  <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99" class="w-14 rounded-lg border border-line bg-linen px-2 py-1 text-center text-sm font-semibold text-ink" onchange="this.form.submit()">
+                </form>
+
+                <div class="text-right">
+                  <p class="text-sm font-bold text-ink">
+                    {% if item.subtotal %}
+                      Rs. {{ item.subtotal|floatformat:"0"|intcomma }}
+                    {% else %}
+                      Quote on request
+                    {% endif %}
+                  </p>
+                  <form action="{% url 'remove_from_cart' item.id %}" method="post" class="mt-1">
+                    {% csrf_token %}
+                    <button type="submit" class="text-xs text-stone hover:text-red-600 underline">Remove</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Order Summary Card -->
+        <div>
+          <div class="rounded-3xl bg-white p-7 shadow-soft border border-line sticky top-36">
+            <h3 class="font-display text-xl font-bold text-ink">Order Summary</h3>
+            <div class="mt-6 space-y-3 border-b border-line pb-6 text-sm">
+              <div class="flex justify-between text-stone">
+                <span>Total Items</span>
+                <span class="font-semibold text-ink">{{ cart.total_count }}</span>
+              </div>
+              <div class="flex justify-between text-stone">
+                <span>Showroom Assembly</span>
+                <span class="text-gold-deep font-medium">Included (Karachi)</span>
+              </div>
+              <div class="flex justify-between text-stone">
+                <span>Transport</span>
+                <span class="text-stone font-medium">Calculated at checkout</span>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-between items-baseline">
+              <span class="font-display text-base font-semibold text-ink">Estimated Total</span>
+              <span class="font-display text-2xl font-bold text-gold-deep">
+                {% if cart.total_price %}
+                  Rs. {{ cart.total_price|floatformat:"0"|intcomma }}
+                {% else %}
+                  Price on Request
+                {% endif %}
+              </span>
+            </div>
+
+            <div class="mt-8 space-y-3">
+              <a href="{% url 'checkout' %}" class="btn-gold w-full text-center">
+                Proceed to Checkout
+              </a>
+              <a href="{% url 'shop' %}" class="btn-outline-dark w-full text-center">
+                Continue Shopping
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="mx-auto max-w-xl rounded-3xl border border-line bg-white p-12 text-center shadow-soft">
+        <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold/15 text-gold-deep">
+          {% include "includes/icons/cart.html" with class="h-8 w-8" %}
+        </span>
+        <h3 class="mt-6 font-display text-2xl font-bold text-ink">Your cart is currently empty</h3>
+        <p class="mt-3 text-sm text-stone">Explore our collections of handcrafted solid-wood bedroom sets and storage solutions.</p>
+        <a href="{% url 'shop' %}" class="btn-gold mt-8 inline-flex">Explore Furniture Shop</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

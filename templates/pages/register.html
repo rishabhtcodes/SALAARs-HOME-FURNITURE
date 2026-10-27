@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Create an Account | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+<section class="bg-cream py-20 sm:py-28">
+  <div class="mx-auto max-w-md px-4">
+    <div class="rounded-3xl border border-line bg-white p-8 sm:p-10 shadow-soft">
+      <p class="eyebrow justify-center">Join SALAAR's HOME</p>
+      <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink text-center">Create Account</h1>
+      <p class="mt-2 text-xs text-stone text-center">Save orders and keep track of delivery updates.</p>
+
+      <form method="post" class="mt-8 space-y-4">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold uppercase text-ink mb-1.5">Username *</label>
+          {{ form.username }}
+          {% if form.username.errors %}<p class="text-xs text-red-600 mt-1">{{ form.username.errors.0 }}</p>{% endif %}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-ink mb-1.5">Email *</label>
+          {{ form.email }}
+          {% if form.email.errors %}<p class="text-xs text-red-600 mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-ink mb-1.5">First Name</label>
+            {{ form.first_name }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase text-ink mb-1.5">Last Name</label>
+            {{ form.last_name }}
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-ink mb-1.5">Password *</label>
+          {{ form.password }}
+          {% if form.password.errors %}<p class="text-xs text-red-600 mt-1">{{ form.password.errors.0 }}</p>{% endif %}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-ink mb-1.5">Confirm Password *</label>
+          {{ form.confirm_password }}
+          {% if form.confirm_password.errors %}<p class="text-xs text-red-600 mt-1">{{ form.confirm_password.errors.0 }}</p>{% endif %}
+        </div>
+        <button type="submit" class="btn-gold w-full text-center mt-6">
+          Register Account
+        </button>
+      </form>
+
+      <div class="mt-6 border-t border-line pt-5 text-center text-xs text-stone">
+        Already have an account?
+        <a href="{% url 'login' %}" class="font-semibold text-gold-deep hover:underline">Sign in</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

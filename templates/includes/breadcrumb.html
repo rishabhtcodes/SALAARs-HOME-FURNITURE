@@ -1,0 +1,13 @@
+<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
+    {% for item in items %}
+      <span class="text-mist">/</span>
+      {% if item.url and not forloop.last %}
+        <a href="{{ item.url }}" class="hover:text-gold-deep transition-colors">{{ item.label }}</a>
+      {% else %}
+        <span class="font-medium text-ink">{{ item.label }}</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+</nav>

@@ -1,0 +1,397 @@
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse, Http404
+from django.db.models import Q
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+from .models import Category, NavCategory, Product, Cart, CartItem, Order, OrderItem
+from .forms import CheckoutForm, RegisterForm
+
+
+def get_or_create_cart(request):
+    if request.user.is_authenticated:
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        # Migrate anonymous cart if present
+        if request.session.session_key:
+            anon_cart = Cart.objects.filter(session_key=request.session.session_key).first()
+            if anon_cart and anon_cart != cart:
+                for item in anon_cart.items.all():
+                    cart_item, created = CartItem.objects.get_or_create(
+                        cart=cart, product=item.product,
+                        defaults={"quantity": item.quantity}
+                    )
+                    if not created:
+                        cart_item.quantity += item.quantity
+                        cart_item.save()
+                anon_cart.delete()
+        return cart
+    else:
+        if not request.session.session_key:
+            request.session.save()
+        cart, _ = Cart.objects.get_or_create(session_key=request.session.session_key)
+        return cart
+
+
+def home_view(request):
+    categories = Category.objects.all().order_by("order")
+    # Best sellers (limit 8, prioritized best_selling)
+    best_sellers = Product.objects.all().order_by("-best_selling", "order")[:8]
+    
+    # Pack featured categories with product count and first product image
+    featured_cats = []
+    for cat in categories:
+        first_p = cat.products.first()
+        featured_cats.append({
+            "slug": cat.slug,
+            "name": cat.name,
+            "image": first_p.image if first_p else None,
+            "count": cat.products.count()
+        })
+
+    context = {
+        "featured_categories": featured_cats,
+        "best_selling_products": best_sellers,
+    }
+    return render(request, "pages/home.html", context)
+
+
+def shop_view(request):
+    products = Product.objects.all()
+    query = request.GET.get("q", "").strip()
+    category_slug = request.GET.get("category", "all")
+    price_range = request.GET.get("price", "any")
+    sort = request.GET.get("sort", "newest")
+    delivery = request.GET.getlist("delivery")
+    material = request.GET.getlist("material")
+    color = request.GET.getlist("color")
+    availability = request.GET.get("availability", "all")
+    tags = request.GET.getlist("tag")
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(category__name__icontains=query) |
+            Q(material__icontains=query) |
+            Q(delivery_time__icontains=query) |
+            Q(color__icontains=query)
+        )
+
+    if category_slug != "all":
+        products = products.filter(category__slug=category_slug)
+
+    if price_range == "lt10":
+        products = products.filter(price__lt=50000)
+    elif price_range == "10-30":
+        products = products.filter(price__gte=50000, price__lt=150000)
+    elif price_range == "30-60":
+        products = products.filter(price__gte=150000, price__lt=300000)
+    elif price_range == "gt60":
+        products = products.filter(price__gte=300000)
+
+    if delivery:
+        products = products.filter(delivery_time__in=delivery)
+    if material:
+        products = products.filter(material__in=material)
+    if color:
+        products = products.filter(color__in=color)
+
+    if availability != "all":
+        products = products.filter(availability=availability)
+
+    if "featured" in tags:
+        products = products.filter(featured=True)
+    if "bestSelling" in tags:
+        products = products.filter(best_selling=True)
+    if "isNew" in tags:
+        products = products.filter(is_new=True)
+
+    if sort == "newest":
+        products = products.order_by("-is_new", "order", "-id")
+    elif sort == "price-asc":
+        products = products.order_by("price")
+    elif sort == "price-desc":
+        products = products.order_by("-price")
+    elif sort == "name-asc":
+        products = products.order_by("name")
+
+    all_deliveries = Product.objects.values_list("delivery_time", flat=True).distinct()
+    all_materials = Product.objects.exclude(material__isnull=True).exclude(material="").values_list("material", flat=True).distinct()
+    all_colors = Product.objects.exclude(color__isnull=True).exclude(color="").values_list("color", flat=True).distinct()
+
+    context = {
+        "products": products,
+        "query": query,
+        "active_category": category_slug,
+        "price_range": price_range,
+        "selected_deliveries": delivery,
+        "selected_materials": material,
+        "selected_colors": color,
+        "selected_availability": availability,
+        "selected_tags": tags,
+        "sort": sort,
+        "all_deliveries": [d for d in all_deliveries if d],
+        "all_materials": [m for m in all_materials if m],
+        "all_colors": [c for c in all_colors if c],
+    }
+    return render(request, "pages/shop.html", context)
+
+
+def nav_category_view(request, slug):
+    nav_item = get_object_or_404(NavCategory, slug=slug)
+    products = []
+    if nav_item.source_category:
+        products = nav_item.source_category.products.all().order_by("order")
+
+    context = {
+        "item": nav_item,
+        "products": products,
+    }
+    return render(request, "pages/category.html", context)
+
+
+def direct_category_view(request, category):
+    cat = get_object_or_404(Category, slug=category)
+    products = cat.products.all().order_by("order")
+    context = {
+        "info": cat,
+        "products": products,
+    }
+    return render(request, "pages/direct_category.html", context)
+
+
+def product_detail_view(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    related = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+
+    gallery = [product.image]
+    if product.gallery:
+        for g in product.gallery:
+            if g not in gallery:
+                gallery.append(g)
+
+    context = {
+        "product": product,
+        "related_products": related,
+        "gallery": gallery,
+    }
+    return render(request, "pages/product_detail.html", context)
+
+
+def about_view(request):
+    return render(request, "pages/about.html")
+
+
+def contact_view(request):
+    return render(request, "pages/contact.html")
+
+
+def faq_view(request):
+    return render(request, "pages/faq.html")
+
+
+def search_api_view(request):
+    query = request.GET.get("q", "").strip()
+    if len(query) < 2:
+        return JsonResponse({"results": []})
+
+    qs = Product.objects.filter(
+        Q(name__icontains=query) |
+        Q(category__name__icontains=query) |
+        Q(material__icontains=query) |
+        Q(delivery_time__icontains=query)
+    )[:8]
+
+    results = []
+    for p in qs:
+        results.append({
+            "id": p.id,
+            "name": p.name,
+            "slug": p.slug,
+            "category": p.category.name,
+            "price": p.formatted_price,
+            "image": p.image,
+            "delivery": p.delivery_time,
+        })
+    return JsonResponse({"results": results})
+
+
+def cart_view(request):
+    cart = get_or_create_cart(request)
+    context = {
+        "cart": cart,
+        "items": cart.items.select_related("product").all()
+    }
+    return render(request, "pages/cart.html", context)
+
+
+@require_POST
+def add_to_cart_view(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart = get_or_create_cart(request)
+    
+    qty = int(request.POST.get("quantity", 1))
+    cart_item, created = CartItem.objects.get_or_create(
+        cart=cart, product=product,
+        defaults={"quantity": qty}
+    )
+    if not created:
+        cart_item.quantity += qty
+        cart_item.save()
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({
+            "success": True,
+            "total_count": cart.total_count,
+            "message": f"Added {product.name} to cart"
+        })
+    messages.success(request, f"Added {product.name} to your cart.")
+    return redirect("cart")
+
+
+@require_POST
+def update_cart_view(request, item_id):
+    cart_item = get_object_or_404(CartItem, id=item_id)
+    cart = get_or_create_cart(request)
+    if cart_item.cart != cart:
+        raise Http404
+
+    qty = int(request.POST.get("quantity", 1))
+    if qty > 0:
+        cart_item.quantity = qty
+        cart_item.save()
+    else:
+        cart_item.delete()
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({
+            "success": True,
+            "total_count": cart.total_count,
+            "total_price": float(cart.total_price),
+            "subtotal": float(cart_item.subtotal) if qty > 0 else 0
+        })
+    return redirect("cart")
+
+
+@require_POST
+def remove_from_cart_view(request, item_id):
+    cart_item = get_object_or_404(CartItem, id=item_id)
+    cart = get_or_create_cart(request)
+    if cart_item.cart != cart:
+        raise Http404
+
+    cart_item.delete()
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({
+            "success": True,
+            "total_count": cart.total_count,
+            "total_price": float(cart.total_price)
+        })
+    messages.info(request, "Item removed from your cart.")
+    return redirect("cart")
+
+
+def checkout_view(request):
+    cart = get_or_create_cart(request)
+    items = cart.items.select_related("product").all()
+    if not items:
+        messages.warning(request, "Your cart is empty. Please add items before checking out.")
+        return redirect("shop")
+
+    if request.method == "POST":
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            if request.user.is_authenticated:
+                order.user = request.user
+            order.total_amount = cart.total_price
+            order.save()
+
+            for it in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=it.product,
+                    product_name=it.product.name,
+                    price=it.product.price,
+                    quantity=it.quantity
+                )
+
+            # Clear cart
+            cart.items.all().delete()
+            return redirect("order_success", order_id=order.id)
+    else:
+        initial = {}
+        if request.user.is_authenticated:
+            initial = {
+                "full_name": f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username,
+                "email": request.user.email,
+            }
+        form = CheckoutForm(initial=initial)
+
+    context = {
+        "cart": cart,
+        "items": items,
+        "form": form,
+    }
+    return render(request, "pages/checkout.html", context)
+
+
+def order_success_view(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, "pages/order_success.html", {"order": order})
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("account")
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            get_or_create_cart(request)  # migrates anonymous cart
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+            next_url = request.GET.get("next", "account")
+            return redirect(next_url)
+    else:
+        form = AuthenticationForm()
+
+    return render(request, "pages/login.html", {"form": form})
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect("account")
+
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data["password"])
+            user.save()
+            login(request, user)
+            get_or_create_cart(request)
+            messages.success(request, "Your account has been created successfully!")
+            return redirect("account")
+    else:
+        form = RegisterForm()
+
+    return render(request, "pages/register.html", {"form": form})
+
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have been logged out.")
+    return redirect("home")
+
+
+@login_required
+def account_view(request):
+    orders = Order.objects.filter(user=request.user).prefetch_related("items").all()
+    return render(request, "pages/account.html", {"orders": orders})
+
+
+def not_found_view(request, exception=None):
+    return render(request, "pages/404.html", status=404)

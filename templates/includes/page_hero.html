@@ -1,0 +1,27 @@
+{% load static %}
+<div class="relative overflow-hidden bg-ink py-16 text-white sm:py-24">
+  {% if image %}
+    <div class="absolute inset-0 opacity-25">
+      <img src="{% static image|slice:'1:' %}" alt="" class="h-full w-full object-cover">
+    </div>
+  {% endif %}
+  <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent"></div>
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 relative">
+    <div class="max-w-2xl">
+      {% if eyebrow %}
+        <p class="eyebrow-dark">
+          <span class="h-px w-8 bg-gold" aria-hidden="true"></span>
+          {{ eyebrow }}
+        </p>
+      {% endif %}
+      <h1 class="text-3xl font-display font-semibold sm:text-5xl lg:text-6xl text-white">
+        <span class="text-gold-gradient">{{ title }}</span>
+      </h1>
+      {% if description %}
+        <p class="mt-4 text-sm leading-relaxed text-mist sm:text-base max-w-xl">
+          {{ description }}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</div>

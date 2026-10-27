@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1712"/>
+      <stop offset="1" stop-color="#0d0b09"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e3c877"/>
+      <stop offset="0.5" stop-color="#c9a227"/>
+      <stop offset="1" stop-color="#8a6a1c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <rect x="2.5%" y="2.5%" width="95%" height="95%" fill="none" stroke="url(#glow)" stroke-opacity="0.4" stroke-width="2"/>
+  <rect x="4%" y="4%" width="92%" height="92%" fill="none" stroke="#c9a227" stroke-opacity="0.14" stroke-width="1"/>
+  
+  <text x="50%" y="62%" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="63" fill="#ece5d8" letter-spacing="2">Inside the Showroom</text>
+  <text x="50%" y="70%" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="23" fill="#c9a227" letter-spacing="7" text-transform="uppercase">Featured</text>
+  <text x="50%" y="868" text-anchor="middle" font-family="Georgia, serif" font-size="25" fill="#8a8578" letter-spacing="5">S A L A A R ' S   H O M E</text>
+</svg>

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Shop Handcrafted Furniture | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+{% include "includes/page_hero.html" with title="Shop Our Collection" eyebrow="Karachi Showroom" description="Handcrafted bedroom sets, wardrobes, dressers, and side tables in solid wood. Custom finishes available." image="/banners/1.webp" %}
+
+{% include "includes/breadcrumb.html" with items=breadcrumbs %}
+
+<section class="bg-cream py-12 sm:py-16 lg:py-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
+    <!-- Mobile Filter Toggle Button -->
+    <div class="mb-6 flex items-center justify-between lg:hidden">
+      <button type="button" id="mobile-filter-btn" class="btn-outline-dark text-xs">
+        <svg class="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        Filters & Search
+      </button>
+      <span class="text-xs font-semibold text-stone uppercase tracking-wider">{{ products.count }} Pieces</span>
+    </div>
+
+    <div class="grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-12">
+      <!-- Filter Sidebar -->
+      <aside id="shop-sidebar" class="hidden lg:block">
+        <div class="sticky top-36 rounded-3xl bg-white p-6 shadow-soft ring-1 ring-line">
+          <form id="filter-form" method="get" action="{% url 'shop' %}">
+            <div class="flex items-center justify-between pb-4 border-b border-line">
+              <span class="font-display text-lg font-bold text-ink">Filters</span>
+              <a href="{% url 'shop' %}" class="text-xs font-semibold text-gold-deep hover:underline">Reset All</a>
+            </div>
+
+            <!-- Instant Search Input -->
+            <div class="py-5 border-b border-line">
+              <p class="mb-3 text-[11px] font-semibold tracking-[0.25em] text-ink uppercase">Search</p>
+              <div class="relative">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search products..." class="w-full rounded-xl border border-line bg-linen px-3.5 py-2.5 text-xs text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none">
+                {% if query %}
+                  <a href="{% url 'shop' %}" class="absolute right-3 top-2.5 text-stone hover:text-ink">✕</a>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="py-5 border-b border-line">
+              <p class="mb-3 text-[11px] font-semibold tracking-[0.25em] text-ink uppercase">Category</p>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="radio" name="category" value="all" {% if active_category == 'all' %}checked{% endif %} onchange="this.form.submit()" class="accent-gold-deep">
+                  All Collections
+                </label>
+                {% for cat in CATEGORIES %}
+                  <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                    <input type="radio" name="category" value="{{ cat.slug }}" {% if active_category == cat.slug %}checked{% endif %} onchange="this.form.submit()" class="accent-gold-deep">
+                    {{ cat.name }}
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="py-5 border-b border-line">
+              <p class="mb-3 text-[11px] font-semibold tracking-[0.25em] text-ink uppercase">Price Range</p>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="radio" name="price" value="any" {% if price_range == 'any' %}checked{% endif %} onchange="this.form.submit()" class="accent-gold-deep">
+                  Any Price
+                </label>
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="radio" name="price" value="lt10" {% if price_range == 'lt10' %}checked{% endif %} onchange="this.form.submit()" class="accent-gold-deep">
+                  Under Rs. 50,000
+                </label>
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="radio" name="price" value="10-30" {% if price_range == '10-30' %}checked{% endif %} onchange="this.form.submit()" class="accent-gold-deep">
+                  Rs. 50,000 – 150,000
+                </label>
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="radio" name="price" value="30-60" {% if price_range == '30-60' %}checked{% endif %} onchange="this.form.submit()" class="accent-gold-deep">
+                  Rs. 150,000 – 300,000
+                </label>
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="radio" name="price" value="gt60" {% if price_range == 'gt60' %}checked{% endif %} onchange="this.form.submit()" class="accent-gold-deep">
+                  Above Rs. 300,000
+                </label>
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="py-5 border-b border-line">
+              <p class="mb-3 text-[11px] font-semibold tracking-[0.25em] text-ink uppercase">Special Collections</p>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="checkbox" name="tag" value="bestSelling" {% if 'bestSelling' in selected_tags %}checked{% endif %} onchange="this.form.submit()" class="rounded border-line accent-gold-deep">
+                  Best Sellers
+                </label>
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="checkbox" name="tag" value="featured" {% if 'featured' in selected_tags %}checked{% endif %} onchange="this.form.submit()" class="rounded border-line accent-gold-deep">
+                  Featured
+                </label>
+                <label class="flex items-center gap-2.5 text-sm text-stone cursor-pointer hover:text-ink">
+                  <input type="checkbox" name="tag" value="isNew" {% if 'isNew' in selected_tags %}checked{% endif %} onchange="this.form.submit()" class="rounded border-line accent-gold-deep">
+                  New Arrivals
+                </label>
+              </div>
+            </div>
+
+            <!-- Sort By -->
+            <div class="pt-5">
+              <p class="mb-3 text-[11px] font-semibold tracking-[0.25em] text-ink uppercase">Sort By</p>
+              <select name="sort" onchange="this.form.submit()" class="w-full rounded-xl border border-line bg-linen px-3.5 py-2.5 text-xs text-ink focus:border-gold focus:outline-none">
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                <option value="price-asc" {% if sort == 'price-asc' %}selected{% endif %}>Price: Low to High</option>
+                <option value="price-desc" {% if sort == 'price-desc' %}selected{% endif %}>Price: High to Low</option>
+                <option value="name-asc" {% if sort == 'name-asc' %}selected{% endif %}>Alphabetical</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </aside>
+
+      <!-- Products Grid Area -->
+      <div>
+        <div class="mb-8 hidden items-center justify-between lg:flex">
+          <p class="text-xs font-semibold tracking-[0.25em] text-stone uppercase">
+            {{ products.count }} {% if products.count == 1 %}piece{% else %}pieces{% endif %} found
+          </p>
+        </div>
+
+        {% if products %}
+          <div class="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            {% for product in products %}
+              {% include "includes/product_card.html" with product=product %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="rounded-3xl border border-line bg-white p-12 text-center shadow-soft">
+            <h3 class="font-display text-2xl font-semibold text-ink">No matching furniture pieces</h3>
+            <p class="mt-3 text-sm text-stone">Try clearing some filters or searching for another term.</p>
+            <a href="{% url 'shop' %}" class="btn-gold mt-6 inline-flex">View All Furniture</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const filterBtn = document.getElementById("mobile-filter-btn");
+  const sidebar = document.getElementById("shop-sidebar");
+  if (filterBtn && sidebar) {
+    filterBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("hidden");
+      sidebar.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+});
+</script>
+{% endblock %}

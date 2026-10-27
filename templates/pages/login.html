@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+<section class="bg-cream py-20 sm:py-28">
+  <div class="mx-auto max-w-md px-4">
+    <div class="rounded-3xl border border-line bg-white p-8 sm:p-10 shadow-soft">
+      <p class="eyebrow justify-center">Welcome Back</p>
+      <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink text-center">Account Sign In</h1>
+      <p class="mt-2 text-xs text-stone text-center">Manage your orders and saved shipping preferences.</p>
+
+      <form method="post" class="mt-8 space-y-4">
+        {% csrf_token %}
+        {% if form.errors %}
+          <div class="rounded-xl bg-red-50 p-3 text-xs text-red-700">
+            Invalid username or password. Please try again.
+          </div>
+        {% endif %}
+        <div>
+          <label class="block text-xs font-semibold uppercase text-ink mb-1.5">Username</label>
+          <input type="text" name="username" required autofocus class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-ink mb-1.5">Password</label>
+          <input type="password" name="password" required class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none">
+        </div>
+        <button type="submit" class="btn-gold w-full text-center mt-6">
+          Sign In
+        </button>
+      </form>
+
+      <div class="mt-6 border-t border-line pt-5 text-center text-xs text-stone">
+        Don't have an account yet?
+        <a href="{% url 'register' %}" class="font-semibold text-gold-deep hover:underline">Register now</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

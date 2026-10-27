@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Our Heritage | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+{% include "includes/page_hero.html" with title="About SALAAR's HOME" eyebrow="Handcrafted Furniture Heritage" description="Over a decade of bringing solid wood elegance, authentic craftsmanship, and bespoke furniture to Pakistani homes." image="/banners/1.webp" %}
+
+<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
+    <span class="text-mist">/</span>
+    <span class="font-medium text-ink">About Us</span>
+  </div>
+</nav>
+
+<!-- Story Section -->
+<section class="bg-linen py-16 sm:py-20 lg:py-24">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+    <div>
+      <p class="eyebrow">
+        <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+        Our Story · {{ SITE.name }}
+      </p>
+      <h2 class="title-lg">Born from a Passion for Solid Wood</h2>
+      <p class="mt-6 leading-relaxed text-stone">
+        SALAAR's HOME was established with one timeless belief: furniture should be honest, beautiful, and made to outlast trends. In a world full of disposable board pieces, we chose to stand by authentic solid timber and handcrafted joinery.
+      </p>
+      <p class="mt-4 leading-relaxed text-stone">
+        From complete bedroom suites to made-to-measure wardrobes and delicate bedside tables, every piece that leaves our Karachi workshop is seasoned, shaped, and polished by masters of the craft.
+      </p>
+      <a href="{% url 'contact' %}" class="btn-gold mt-8 inline-flex">
+        Visit Our Showroom
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="relative overflow-hidden rounded-[20px] shadow-soft ring-1 ring-line aspect-[3/4]">
+        <img src="{% static 'banners/2.webp' %}" alt="Craftsmanship" class="h-full w-full object-cover">
+      </div>
+      <div class="relative overflow-hidden rounded-[20px] shadow-soft ring-1 ring-line aspect-[3/4] mt-8">
+        <img src="{% static 'banners/3.webp' %}" alt="Showroom Display" class="h-full w-full object-cover">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission & Vision -->
+<section class="bg-cream py-16 sm:py-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 grid gap-6 lg:grid-cols-2">
+    <div class="card card-hover p-8 sm:p-10">
+      <p class="eyebrow">
+        <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+        Our Mission
+      </p>
+      <h3 class="mt-4 font-display text-2xl font-semibold text-ink sm:text-3xl">Crafting Pieces That Feel Like Home</h3>
+      <p class="mt-5 leading-relaxed text-stone">
+        To provide families across Pakistan with durable, aesthetically inspiring solid wood furniture delivered with white-glove assembly, total transparency, and unwavering attention to detail.
+      </p>
+    </div>
+
+    <div class="card card-hover p-8 sm:p-10">
+      <p class="eyebrow">
+        <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+        Our Vision
+      </p>
+      <h3 class="mt-4 font-display text-2xl font-semibold text-ink sm:text-3xl">Pakistan's Trusted Name in Luxury Living</h3>
+      <p class="mt-5 leading-relaxed text-stone">
+        To set the benchmark for Pakistani furniture design, marrying timeless subcontinental timber traditions with modern ergonomic sensibilities for generations to come.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Band -->
+<section class="bg-ink py-14 sm:py-16 text-white">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
+    <div class="grid gap-10 text-center sm:grid-cols-3">
+      <div>
+        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">12+</p>
+        <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Years of Craftsmanship</p>
+      </div>
+      <div>
+        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">800+</p>
+        <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Custom Designs</p>
+      </div>
+      <div>
+        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">1,000+</p>
+        <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Happy Homes</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
