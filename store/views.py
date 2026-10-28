@@ -20,6 +20,7 @@ from .models import (
     OrderItem,
 )
 from .forms import CheckoutForm, RegisterForm
+from .emails import send_order_confirmation_email
 import re
 
 
@@ -506,6 +507,13 @@ def checkout_view(request):
 
             # Clear cart
             cart.items.all().delete()
+
+            # If user selected card or mobile wallet, redirect to the interactive demo gateway
+            if order.payment_method in ("card", "jazzcash"):
+                return redirect("payment_gateway", order_id=order.id)
+
+            # Send customized order confirmation email for cash / bank wire orders
+            send_order_confirmation_email(order)
             return redirect("order_success", order_id=order.id)
     else:
         initial = {}
@@ -527,6 +535,32 @@ def checkout_view(request):
 def order_success_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, "pages/order_success.html", {"order": order})
+
+
+def payment_gateway_view(request, order_id):
+    import uuid
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == "POST":
+        action = request.POST.get("action", "pay")
+        if action == "pay":
+            order.is_paid = True
+            order.status = "paid"
+            order.payment_transaction_id = f"TXN-SLR-{uuid.uuid4().hex[:10].upper()}"
+            order.save()
+            send_order_confirmation_email(order)
+            messages.success(request, f"Payment simulated successfully! Transaction ID: {order.payment_transaction_id}")
+            return redirect("order_success", order_id=order.id)
+        elif action == "cancel":
+            send_order_confirmation_email(order)
+            messages.info(request, "Payment was postponed. You can pay via showroom bank transfer or cash on arrival.")
+            return redirect("order_success", order_id=order.id)
+
+    context = {
+        "order": order,
+        "items": order.items.all(),
+    }
+    return render(request, "pages/payment_gateway.html", context)
 
 
 def login_view(request):

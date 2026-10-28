@@ -4,9 +4,16 @@ from .models import Order
 
 
 class CheckoutForm(forms.ModelForm):
+    payment_method = forms.ChoiceField(
+        choices=Order.PAYMENT_METHOD_CHOICES,
+        widget=forms.RadioSelect(attrs={"class": "sr-only"}),
+        initial="card",
+        required=False
+    )
+
     class Meta:
         model = Order
-        fields = ["full_name", "phone", "email", "address", "city", "notes"]
+        fields = ["full_name", "phone", "email", "address", "city", "payment_method", "notes"]
         widgets = {
             "full_name": forms.TextInput(attrs={
                 "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",

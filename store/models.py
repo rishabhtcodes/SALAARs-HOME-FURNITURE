@@ -172,11 +172,19 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ("pending", "Pending"),
+        ("pending", "Pending Payment / Verification"),
+        ("paid", "Paid (Demo Gateway)"),
         ("confirmed", "Confirmed"),
         ("shipped", "Shipped"),
         ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
+    ]
+
+    PAYMENT_METHOD_CHOICES = [
+        ("card", "Credit / Debit Card (Demo Secure Gateway)"),
+        ("jazzcash", "JazzCash / EasyPaisa (Mobile Wallet)"),
+        ("bank_transfer", "Direct Showroom Bank Wire"),
+        ("cod", "Cash on Delivery / Assembly"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -186,6 +194,9 @@ class Order(models.Model):
     address = models.TextField()
     city = models.CharField(max_length=100, default="Karachi")
     notes = models.TextField(blank=True)
+    payment_method = models.CharField(max_length=30, choices=PAYMENT_METHOD_CHOICES, default="card")
+    is_paid = models.BooleanField(default=False)
+    payment_transaction_id = models.CharField(max_length=100, blank=True)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)

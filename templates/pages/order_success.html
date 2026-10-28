@@ -21,13 +21,23 @@
           <span class="font-semibold text-ink text-right">{{ order.address }}, {{ order.city }}</span>
         </div>
         <div class="flex justify-between">
+          <span class="text-stone">Payment Method:</span>
+          <span class="font-semibold text-ink">{{ order.get_payment_method_display }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone">Payment Status:</span>
+          <span class="font-bold {% if order.is_paid %}text-emerald-600{% else %}text-amber-600{% endif %} uppercase">
+            {% if order.is_paid %}PAID (TRANSACTION: {{ order.payment_transaction_id }}){% else %}PENDING UPON DISPATCH{% endif %}
+          </span>
+        </div>
+        <div class="flex justify-between">
           <span class="text-stone">Order Status:</span>
           <span class="font-bold text-gold-deep uppercase">{{ order.get_status_display }}</span>
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between border-t border-line/60 pt-2">
           <span class="text-stone">Total Amount:</span>
-          <span class="font-bold text-ink">
-            {% if order.total_amount %}Rs. {{ order.total_amount|floatformat:"0" }}{% else %}Price on Request{% endif %}
+          <span class="font-bold text-ink text-sm">
+            Rs. {{ order.total_amount|floatformat:"0" }}
           </span>
         </div>
       </div>

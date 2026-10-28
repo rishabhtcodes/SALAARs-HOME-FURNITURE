@@ -19,6 +19,7 @@ urlpatterns = [
     path("cart/update/<int:item_id>/", views.update_cart_view, name="update_cart"),
     path("cart/remove/<int:item_id>/", views.remove_from_cart_view, name="remove_from_cart"),
     path("checkout/", views.checkout_view, name="checkout"),
+    path("checkout/pay/<int:order_id>/", views.payment_gateway_view, name="payment_gateway"),
     path("order/<int:order_id>/success/", views.order_success_view, name="order_success"),
 
     # Authentication & Account

@@ -1,0 +1,32 @@
+Order Confirmation #{{ order.id }} - {{ site.name|default:"SALAAR's HOME" }}
+
+Dear {{ order.full_name }},
+
+Thank you for your order with {{ site.name|default:"SALAAR's HOME" }}.
+We have received your furniture order and our Karachi showroom team will contact you on {{ order.phone }} shortly to confirm delivery timelines.
+
+--- ORDER SUMMARY ---
+Order ID: #{{ order.id }}
+Payment Method: {{ order.get_payment_method_display }}
+Payment Status: {% if order.is_paid %}PAID ({{ order.payment_transaction_id }}){% else %}PENDING UPON DISPATCH{% endif %}
+Total Amount: Rs. {{ order.total_amount|floatformat:"0" }}
+
+--- ITEMS ---
+{% for item in items %}
+* {{ item.product_name }} - Qty: {{ item.quantity }} - Rs. {{ item.price|floatformat:"0" }}
+{% endfor %}
+
+--- DELIVERY DETAILS ---
+{{ order.address }}
+{{ order.city }}, Pakistan
+Phone: {{ order.phone }}
+
+{% if order.notes %}
+Special Instructions: {{ order.notes }}
+{% endif %}
+
+For questions, call our showroom team directly at {{ site.phone_display }} or visit {{ site.url }}.
+
+Warm regards,
+{{ site.name|default:"SALAAR's HOME FURNITURE" }}
+

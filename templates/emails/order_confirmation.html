@@ -1,0 +1,329 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation #{{ order.id }}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f7f4ee;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1f1b16;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      width: 100%;
+      table-layout: fixed;
+      background-color: #f7f4ee;
+      padding: 30px 15px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #e7ded2;
+      box-shadow: 0 4px 20px rgba(31, 27, 22, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1f1b16 0%, #2e2820 100%);
+      padding: 35px 30px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .brand-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #c9a227;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .brand-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 0.03em;
+    }
+    .hero-box {
+      background-color: #fcfbf9;
+      border-bottom: 1px solid #eee8df;
+      padding: 24px 30px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background-color: #f9f4e2;
+      color: #8a6a1c;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      margin-bottom: 10px;
+    }
+    .hero-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1f1b16;
+      margin: 0 0 6px 0;
+    }
+    .hero-sub {
+      font-size: 13px;
+      color: #6b6357;
+      margin: 0;
+      line-height: 1.5;
+    }
+    .content {
+      padding: 30px;
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8a6a1c;
+      margin-top: 0;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #f0ebe2;
+      padding-bottom: 8px;
+    }
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+    .order-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8c8273;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee8df;
+    }
+    .order-table td {
+      padding: 14px 0;
+      font-size: 13px;
+      border-bottom: 1px solid #f6f2ec;
+      vertical-align: middle;
+    }
+    .product-title {
+      font-weight: 600;
+      color: #1f1b16;
+      margin: 0;
+    }
+    .product-qty {
+      font-size: 12px;
+      color: #8c8273;
+      margin-top: 3px;
+    }
+    .price-text {
+      text-align: right;
+      font-weight: 700;
+      color: #1f1b16;
+      white-space: nowrap;
+    }
+    .summary-box {
+      background-color: #fcfbf9;
+      border: 1px solid #eee8df;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #6b6357;
+      margin-bottom: 8px;
+    }
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1f1b16;
+      border-top: 1px solid #eee8df;
+      padding-top: 10px;
+      margin-top: 8px;
+    }
+    .info-grid {
+      display: table;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+    .info-col {
+      display: table-cell;
+      width: 50%;
+      vertical-align: top;
+      padding-right: 12px;
+    }
+    .info-card {
+      background-color: #fcfbf9;
+      border: 1px solid #eee8df;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #4a4338;
+      min-height: 100px;
+    }
+    .info-card strong {
+      display: block;
+      color: #1f1b16;
+      font-size: 12px;
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .cta-btn {
+      display: block;
+      background: #c9a227;
+      color: #1f1b16;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-align: center;
+      padding: 14px 24px;
+      border-radius: 9999px;
+      margin: 20px 0;
+    }
+    .footer {
+      background-color: #f7f4ee;
+      padding: 24px 30px;
+      text-align: center;
+      font-size: 11px;
+      color: #8c8273;
+      line-height: 1.6;
+      border-top: 1px solid #eee8df;
+    }
+    .footer a {
+      color: #8a6a1c;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="brand-eyebrow">Luxury Solid Wood Furniture</div>
+        <h1 class="brand-title">{{ site.name|default:"SALAAR's HOME" }}</h1>
+      </div>
+
+      <!-- Hero Box -->
+      <div class="hero-box">
+        <span class="hero-badge">Order #{{ order.id }} Confirmed</span>
+        <h2 class="hero-heading">Thank You, {{ order.full_name }}!</h2>
+        <p class="hero-sub">
+          We have received your furniture order. Our Karachi showroom team will contact you on <strong>{{ order.phone }}</strong> to coordinate white-glove delivery and assembly.
+        </p>
+      </div>
+
+      <!-- Main Content -->
+      <div class="content">
+        <h3 class="section-title">Your Selected Pieces</h3>
+        <table class="order-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th style="text-align: center;">Qty</th>
+              <th style="text-align: right;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>
+                <p class="product-title">{{ item.product_name }}</p>
+              </td>
+              <td style="text-align: center; color: #6b6357;">
+                {{ item.quantity }}
+              </td>
+              <td class="price-text">
+                Rs. {{ item.price|floatformat:"0"|intcomma }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Order Summary -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px; background: #fcfbf9; border: 1px solid #eee8df; border-radius: 12px; padding: 16px;">
+          <tr>
+            <td style="padding: 6px 16px; font-size: 13px; color: #6b6357;">Payment Method</td>
+            <td style="padding: 6px 16px; font-size: 13px; font-weight: 600; text-align: right; color: #1f1b16;">{{ order.get_payment_method_display }}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 16px; font-size: 13px; color: #6b6357;">Payment Status</td>
+            <td style="padding: 6px 16px; font-size: 13px; font-weight: 700; text-align: right; color: {% if order.is_paid %}#059669{% else %}#d97706{% endif %};">
+              {% if order.is_paid %}PAID ({{ order.payment_transaction_id }}){% else %}PENDING UPON DISPATCH{% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 16px; font-size: 13px; color: #6b6357;">White-Glove Assembly</td>
+            <td style="padding: 6px 16px; font-size: 13px; font-weight: 600; text-align: right; color: #059669;">Included (Karachi)</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 16px 6px; font-size: 15px; font-weight: 700; border-top: 1px solid #eee8df; color: #1f1b16;">Total Order Amount</td>
+            <td style="padding: 12px 16px 6px; font-size: 17px; font-weight: 700; border-top: 1px solid #eee8df; text-align: right; color: #8a6a1c;">
+              Rs. {{ order.total_amount|floatformat:"0"|intcomma }}
+            </td>
+          </tr>
+        </table>
+
+        <!-- Shipping & Details -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+          <tr>
+            <td width="50%" style="vertical-align: top; padding-right: 8px;">
+              <div class="info-card">
+                <strong>Delivery Address</strong>
+                {{ order.address }}<br>
+                {{ order.city }}, Pakistan<br>
+                Phone: {{ order.phone }}
+              </div>
+            </td>
+            <td width="50%" style="vertical-align: top; padding-left: 8px;">
+              <div class="info-card">
+                <strong>Workshop & Showroom</strong>
+                Showroom: {{ site.address|default:"Karachi Showroom" }}<br>
+                Hours: {{ site.hours|default:"8:00 AM – 9:00 PM" }}<br>
+                Direct Help: {{ site.phone_display|default:"037 080 4453" }}
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        {% if order.notes %}
+        <div style="background-color: #fcfbf9; border: 1px solid #eee8df; border-radius: 12px; padding: 14px 16px; font-size: 12px; color: #6b6357; margin-bottom: 20px;">
+          <strong style="color: #1f1b16;">Your Custom Instructions:</strong><br>
+          {{ order.notes }}
+        </div>
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 25px;">
+          <a href="{{ site.url }}/account/" class="cta-btn">View Order in Your Account</a>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p style="margin: 0 0 6px 0;"><strong>{{ site.name|default:"SALAAR's HOME FURNITURE" }}</strong></p>
+        <p style="margin: 0 0 8px 0;">Premium handcrafted furniture crafted with solid wood, custom finishes, and guaranteed structural warranty.</p>
+        <p style="margin: 0;">Need immediate help? Call us at <a href="tel:+{{ site.phone_intl }}">{{ site.phone_display }}</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

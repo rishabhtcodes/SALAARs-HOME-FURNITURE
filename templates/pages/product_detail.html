@@ -90,9 +90,12 @@
       </p>
       <h1 class="text-[1.9rem] leading-[1.14] font-semibold text-balance sm:text-4xl lg:text-5xl">{{ product.name }}</h1>
 
-      <p class="mt-6 font-display text-2xl font-semibold tracking-wide text-gold-deep sm:text-3xl">{{ product.formatted_price }}</p>
+      <div class="mt-6 flex items-baseline gap-3">
+        <p class="font-display text-2xl font-bold tracking-wide text-gold-deep sm:text-3xl lg:text-4xl">{{ product.formatted_price }}</p>
+        <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-600/20">Showroom Assembly Included</span>
+      </div>
       <p class="mt-2 text-sm text-stone">
-        {% if product.price %}Best price confirmed directly – give us a call.{% else %}Call us – we will share the best price for this piece.{% endif %}
+        Direct workshop pricing with solid Sheesham/Oak craftsmanship & professional white-glove setup in Karachi.
       </p>
 
       <p class="mt-8 leading-relaxed text-stone">{% if product.description %}{{ product.description }}{% else %}{{ product.category.description }} {{ product.category.short }}{% endif %}</p>
@@ -161,20 +164,23 @@
       </div>
 
       <!-- Actions -->
-      <div class="mt-9 flex flex-wrap gap-4">
-        <a href="tel:+{{ SITE.phone_intl }}" class="btn-gold">
-          {% include "includes/icons/phone.html" with class="h-4 w-4" %}
-          Call {{ SITE.phone_display }}
-        </a>
-        <a href="{% url 'contact' %}" class="btn-outline-dark">Contact Us</a>
+      <div class="mt-9 flex flex-wrap gap-4 items-center">
         <form action="{% url 'add_to_cart' product.id %}" method="post" class="contents">
           {% csrf_token %}
-          <input type="hidden" name="quantity" value="1">
-          <button type="submit" class="btn-outline-dark">
+          <div class="flex items-center rounded-full border border-line bg-linen px-3 py-1.5 shadow-sm">
+            <span class="text-xs font-semibold text-stone uppercase mr-2 tracking-wider">Qty</span>
+            <input type="number" name="quantity" value="1" min="1" max="10" class="w-12 bg-transparent text-center text-sm font-bold text-ink focus:outline-none">
+          </div>
+          <button type="submit" class="btn-gold shadow-md">
             {% include "includes/icons/cart.html" with class="h-4 w-4" %}
-            Add to Cart
+            Add to Cart & Checkout
           </button>
         </form>
+        <a href="tel:+{{ SITE.phone_intl }}" class="btn-outline-dark">
+          {% include "includes/icons/phone.html" with class="h-4 w-4" %}
+          Call Showroom
+        </a>
+        <a href="{% url 'contact' %}" class="btn-outline-dark">Custom Inquiry</a>
       </div>
       <p class="mt-5 text-xs leading-relaxed text-stone">Custom sizes and finishes available for this piece – just ask!</p>
     </div>

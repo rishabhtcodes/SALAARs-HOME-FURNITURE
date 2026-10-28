@@ -246,3 +246,35 @@ class StoreViewsTestCase(TestCase):
         self.assertLess(content.index("/category/bed-sets"), content.index("/bedroom-sets"))
         self.assertIn("<loc>https://salaars-home.vercel.app/</loc>", content)
         self.assertNotIn("-ph-", content)
+
+    def test_demo_payment_gateway_flow(self):
+        # 1. Add product to cart
+        self.client.post(reverse("add_to_cart", args=[self.product.id]), {"quantity": 1})
+
+        # 2. Submit checkout with card payment method
+        checkout_res = self.client.post(reverse("checkout"), {
+            "full_name": "Hamza Alvi",
+            "phone": "03009876543",
+            "email": "hamza@example.com",
+            "city": "Karachi",
+            "address": "Bungalow 45, Clifton Block 4",
+            "payment_method": "card",
+            "notes": "Urgent bedroom setup",
+        })
+        order = Order.objects.latest("id")
+        self.assertRedirects(checkout_res, reverse("payment_gateway", args=[order.id]))
+        self.assertFalse(order.is_paid)
+
+        # 3. View Payment Gateway
+        gateway_res = self.client.get(reverse("payment_gateway", args=[order.id]))
+        self.assertEqual(gateway_res.status_code, 200)
+        self.assertContains(gateway_res, "SALAAR's Pay Safe Demo Gateway")
+        self.assertContains(gateway_res, "Rs. 120,000")
+
+        # 4. Authorize Payment
+        pay_res = self.client.post(reverse("payment_gateway", args=[order.id]), {"action": "pay"})
+        self.assertRedirects(pay_res, reverse("order_success", args=[order.id]))
+        order.refresh_from_db()
+        self.assertTrue(order.is_paid)
+        self.assertEqual(order.status, "paid")
+        self.assertTrue(order.payment_transaction_id.startswith("TXN-SLR-"))
