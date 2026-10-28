@@ -4,20 +4,26 @@
 {% block title %}{{ item.seo_title }} | {{ SITE.name }}{% endblock %}
 {% block description %}{{ item.seo_description }}{% endblock %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ SITE.url }}" },
+    { "@type": "ListItem", "position": 2, "name": "Shop", "item": "{{ SITE.url }}/shop" },
+    { "@type": "ListItem", "position": 3, "name": "{{ item.label|escapejs }}", "item": "{{ SITE.url }}/category/{{ item.slug }}" }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 {% include "includes/page_hero.html" with title=item.label eyebrow=item.tagline description=item.short image="/banners/3.webp" %}
 
-<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
-    <span class="text-mist">/</span>
-    <a href="{% url 'shop' %}" class="hover:text-gold-deep transition-colors">Shop</a>
-    <span class="text-mist">/</span>
-    <span class="font-medium text-ink">{{ item.label }}</span>
-  </div>
-</nav>
+{% include "includes/breadcrumb.html" with items=breadcrumbs %}
 
-<!-- Description Section -->
+<!-- Description -->
 <section class="bg-linen py-16 sm:py-20">
   <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
     <div class="mx-auto max-w-3xl text-center">
@@ -33,14 +39,14 @@
 </section>
 
 <!-- Products or Coming Soon -->
-<section class="pb-16 sm:pb-24 pt-8 bg-cream">
+<section class="pb-16 sm:pb-24">
   <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
     {% if products %}
       <p class="mb-8 flex items-center gap-3 text-xs font-semibold tracking-[0.25em] text-stone uppercase">
-        {{ products.count }} {% if products.count == 1 %}piece{% else %}pieces{% endif %} in this collection
+        {{ products|length }} {% if products|length == 1 %}piece{% else %}pieces{% endif %} in this collection
         <span class="h-px flex-1 bg-gradient-to-r from-ink/10 to-transparent" aria-hidden="true"></span>
       </p>
-      <div class="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+      <div class="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
         {% for product in products %}
           {% include "includes/product_card.html" with product=product %}
         {% endfor %}
@@ -55,7 +61,7 @@
         </p>
         <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
           <a href="{% url 'contact' %}" class="btn-gold">Contact Us</a>
-          <a href="{% url 'shop' %}" class="btn-outline-dark">Browse All Shop</a>
+          <a href="{% url 'shop' %}" class="btn-outline-dark">Browse the Shop</a>
         </div>
       </div>
     {% endif %}

@@ -1,0 +1,27 @@
+{
+  "name": "salaars-home-furniture",
+  "version": "1.0.0",
+  "description": "A full-featured, pure Django website rebuilt with pixel-level visual fidelity matching the original showroom experience, backed by PostgreSQL / SQLite, Django ORM, server-rendered Django Templates, and vanilla JavaScript.",
+  "main": "index.js",
+  "scripts": {
+    "css:build": "tailwindcss -i ./assets/css/tailwind.css -o ./static/css/tailwind.css --minify",
+    "css:watch": "tailwindcss -i ./assets/css/tailwind.css -o ./static/css/tailwind.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rishabhtcodes/SALAARs-HOME-FURNITURE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rishabhtcodes/SALAARs-HOME-FURNITURE/issues"
+  },
+  "homepage": "https://github.com/rishabhtcodes/SALAARs-HOME-FURNITURE#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "private": true
+}

@@ -1,23 +1,37 @@
-<div id="search-modal" class="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-ink/85 px-4 pt-20 backdrop-blur-md sm:pt-24 opacity-0 pointer-events-none transition-opacity duration-300" role="dialog" aria-modal="true" aria-label="Search products">
+<div id="search-modal" class="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-ink/85 px-4 pt-20 backdrop-blur-md sm:pt-24 opacity-0 pointer-events-none transition-opacity duration-300" role="dialog" aria-modal="true" aria-label="Search bedroom sets, wardrobes, side tables…" aria-hidden="true" inert>
   <button type="button" id="close-search-btn" class="absolute top-6 right-6 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white transition-colors hover:border-gold hover:text-gold" aria-label="Close search">
     {% include "includes/icons/close.html" with class="h-4 w-4" %}
   </button>
 
-  <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+  <form action="{% url 'shop' %}" method="get" id="search-form" class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
     <p class="eyebrow">
       <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
-      Instant Search
+      Search the Showroom
     </p>
-    <form action="{% url 'shop' %}" method="get" id="search-form">
-      <label class="flex items-center gap-3 border-b-2 border-ink/15 pb-3 focus-within:border-gold">
-        <span class="sr-only">Search products</span>
-        {% include "includes/icons/search.html" with class="h-5 w-5 shrink-0 text-gold-deep" %}
-        <input type="search" name="q" id="search-modal-input" placeholder="Search bedroom sets, wardrobes, side tables..." class="w-full bg-transparent font-display text-xl text-ink placeholder:text-stone/60 focus:outline-none sm:text-2xl" autocomplete="off">
-      </label>
-    </form>
+    <label class="flex items-center gap-3 border-b-2 border-ink/15 pb-3 focus-within:border-gold">
+      <span class="sr-only">Search bedroom sets, wardrobes, side tables…</span>
+      {% include "includes/icons/search.html" with class="h-5 w-5 shrink-0 text-gold-deep" %}
+      <input type="search" name="q" id="search-modal-input" placeholder="Search bedroom sets, wardrobes, side tables…" class="w-full bg-transparent font-display text-xl text-ink placeholder:text-stone/60 focus:outline-none sm:text-2xl" autocomplete="off">
+    </label>
 
     <div id="search-results-box" class="mt-5 hidden">
       <ul id="search-results-list" class="max-h-[46vh] space-y-2 overflow-y-auto pr-1"></ul>
+
+      <button type="submit" id="search-see-all" class="mt-4 w-full rounded-full border border-ink/15 py-3 text-xs font-semibold tracking-[0.16em] text-ink uppercase transition-colors hover:border-gold hover:text-gold-deep">
+        See all results (<span id="search-see-all-count">0</span>)
+      </button>
     </div>
-  </div>
+
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex flex-wrap gap-2">
+        <span class="self-center text-[10px] font-semibold tracking-[0.2em] text-mist uppercase">Popular</span>
+        {% for cat in HEADER_CATEGORIES %}
+          <a href="{% url 'nav_category' cat.slug %}" class="rounded-full border border-line bg-cream px-4 py-2 text-xs font-semibold tracking-wide text-stone transition-colors hover:border-gold hover:text-gold-deep">
+            {{ cat.label }}
+          </a>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn-gold !px-6 !py-2.5">Search</button>
+    </div>
+  </form>
 </div>

@@ -78,11 +78,35 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Business details (override via environment in production)
+SITE_URL = env('SITE_URL', default='https://salaars-home.vercel.app')
+SITE_PHONE_DISPLAY = env('SITE_PHONE_DISPLAY', default='037 080 4453')
+SITE_PHONE_INTL = env('SITE_PHONE_INTL', default='92370804453')
+SITE_ADDRESS = env('SITE_ADDRESS', default='Furniture Showroom')
+SITE_HOURS = env('SITE_HOURS', default='Every day · 8:00 AM – 9:00 PM')
+SITE_FACEBOOK = env('SITE_FACEBOOK', default='https://www.facebook.com/profile.php?id=61590742701515')
+SITE_TIKTOK = env('SITE_TIKTOK', default='https://www.tiktok.com/@salaars_farnichar')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/account/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Deployment security – enable the HTTPS options in production via environment
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)
+SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False)
+SECURE_HSTS_PRELOAD = env.bool('SECURE_HSTS_PRELOAD', default=False)

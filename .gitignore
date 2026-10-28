@@ -27,3 +27,7 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# Node (Tailwind build tooling)
+node_modules/
+npm-debug.log*

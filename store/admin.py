@@ -1,5 +1,15 @@
 from django.contrib import admin
-from .models import Category, NavCategory, Product, Cart, CartItem, Order, OrderItem
+from .models import (
+    Category,
+    NavCategory,
+    FAQGroup,
+    FAQItem,
+    Product,
+    Cart,
+    CartItem,
+    Order,
+    OrderItem,
+)
 
 
 @admin.register(Category)
@@ -14,6 +24,18 @@ class NavCategoryAdmin(admin.ModelAdmin):
     list_display = ("label", "slug", "source_category", "is_in_header", "order")
     prepopulated_fields = {"slug": ("label",)}
     list_filter = ("is_in_header",)
+
+
+class FAQItemInline(admin.TabularInline):
+    model = FAQItem
+    extra = 1
+    fields = ("question", "answer", "order")
+
+
+@admin.register(FAQGroup)
+class FAQGroupAdmin(admin.ModelAdmin):
+    list_display = ("title", "order")
+    inlines = [FAQItemInline]
 
 
 @admin.register(Product)

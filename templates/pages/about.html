@@ -1,45 +1,38 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}About Our Heritage | {{ SITE.name }}{% endblock %}
+{% block title %}About Us | {{ SITE.name }}{% endblock %}
+{% block description %}{{ SITE.name }} is a family-run furniture showroom in Karachi, Pakistan. Explore our story, our workshop values and why thousands of families furnish with us.{% endblock %}
 
 {% block content %}
-{% include "includes/page_hero.html" with title="About SALAAR's HOME" eyebrow="Handcrafted Furniture Heritage" description="Over a decade of bringing solid wood elegance, authentic craftsmanship, and bespoke furniture to Pakistani homes." image="/banners/1.webp" %}
+{% include "includes/page_hero.html" with title="Furnishing Homes With Care" eyebrow="Our Story" description="A family-run showroom where timeless design meets honest craftsmanship." image="/banners/1.webp" %}
 
-<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
-    <span class="text-mist">/</span>
-    <span class="font-medium text-ink">About Us</span>
-  </div>
-</nav>
+{% include "includes/breadcrumb.html" with items=breadcrumb_items %}
 
-<!-- Story Section -->
+<!-- Story -->
 <section class="bg-linen py-16 sm:py-20 lg:py-24">
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+  <div class="mx-auto grid w-full max-w-[1400px] items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 xl:px-12">
     <div>
       <p class="eyebrow">
         <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
-        Our Story · {{ SITE.name }}
+        Welcome to {{ SITE.name }}
       </p>
-      <h2 class="title-lg">Born from a Passion for Solid Wood</h2>
+      <h2 class="title-lg">Built on craftsmanship, trust and a simple promise.</h2>
       <p class="mt-6 leading-relaxed text-stone">
-        SALAAR's HOME was established with one timeless belief: furniture should be honest, beautiful, and made to outlast trends. In a world full of disposable board pieces, we chose to stand by authentic solid timber and handcrafted joinery.
+        What began as a small family workshop has grown into one of the area's most loved furniture destinations. We design and build every piece in our own workshop, so quality is never a guess – it's a guarantee.
       </p>
       <p class="mt-4 leading-relaxed text-stone">
-        From complete bedroom suites to made-to-measure wardrobes and delicate bedside tables, every piece that leaves our Karachi workshop is seasoned, shaped, and polished by masters of the craft.
+        From bedroom sets to statement wardrobes, each item is made with solid, sustainable materials and finished by hand. When you buy from us, you deal directly with the makers – no middlemen, no inflated prices.
       </p>
-      <a href="{% url 'contact' %}" class="btn-gold mt-8 inline-flex">
-        Visit Our Showroom
-      </a>
+      <a href="{% url 'contact' %}" class="btn-gold mt-8">Get in Touch</a>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <div class="relative overflow-hidden rounded-[20px] shadow-soft ring-1 ring-line aspect-[3/4]">
-        <img src="{% static 'banners/2.webp' %}" alt="Craftsmanship" class="h-full w-full object-cover">
+      <div class="relative aspect-[3/4] overflow-hidden rounded-[20px] shadow-soft ring-1 ring-line">
+        <img src="{% static 'placeholders/gallery-1.svg' %}" alt="Inside the SALAAR's HOME showroom – 1" loading="lazy" class="h-full w-full object-cover">
       </div>
-      <div class="relative overflow-hidden rounded-[20px] shadow-soft ring-1 ring-line aspect-[3/4] mt-8">
-        <img src="{% static 'banners/3.webp' %}" alt="Showroom Display" class="h-full w-full object-cover">
+      <div class="relative mt-8 aspect-[3/4] overflow-hidden rounded-[20px] shadow-soft ring-1 ring-line">
+        <img src="{% static 'placeholders/gallery-2.svg' %}" alt="Inside the SALAAR's HOME showroom – 2" loading="lazy" class="h-full w-full object-cover">
       </div>
     </div>
   </div>
@@ -47,46 +40,148 @@
 
 <!-- Mission & Vision -->
 <section class="bg-cream py-16 sm:py-20">
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 grid gap-6 lg:grid-cols-2">
-    <div class="card card-hover p-8 sm:p-10">
+  <div class="mx-auto grid w-full max-w-[1400px] gap-6 px-4 sm:px-6 lg:grid-cols-2 lg:px-8 xl:px-12">
+    <div class="card card-hover h-full p-8 sm:p-10">
       <p class="eyebrow">
         <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
-        Our Mission
+        Why We Exist
       </p>
-      <h3 class="mt-4 font-display text-2xl font-semibold text-ink sm:text-3xl">Crafting Pieces That Feel Like Home</h3>
-      <p class="mt-5 leading-relaxed text-stone">
-        To provide families across Pakistan with durable, aesthetically inspiring solid wood furniture delivered with white-glove assembly, total transparency, and unwavering attention to detail.
-      </p>
+      <h2 class="mt-4 font-display text-2xl font-semibold text-ink sm:text-3xl">Our Mission</h2>
+      <p class="mt-5 leading-relaxed text-stone">To make beautiful, honest, solid-wood furniture accessible to every home. We believe quality should never be a luxury reserved for a few – so we build in our own workshop, sell directly, and keep prices fair without ever cutting corners.</p>
     </div>
-
-    <div class="card card-hover p-8 sm:p-10">
+    <div class="card card-hover h-full p-8 sm:p-10">
       <p class="eyebrow">
         <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
-        Our Vision
+        Where We're Going
       </p>
-      <h3 class="mt-4 font-display text-2xl font-semibold text-ink sm:text-3xl">Pakistan's Trusted Name in Luxury Living</h3>
-      <p class="mt-5 leading-relaxed text-stone">
-        To set the benchmark for Pakistani furniture design, marrying timeless subcontinental timber traditions with modern ergonomic sensibilities for generations to come.
-      </p>
+      <h2 class="mt-4 font-display text-2xl font-semibold text-ink sm:text-3xl">Our Vision</h2>
+      <p class="mt-5 leading-relaxed text-stone">To become the most trusted furniture name in the region – the showroom families visit first, for their first home and for every home after that. Every piece we make carries our name, so every piece has to be right.</p>
     </div>
   </div>
 </section>
 
-<!-- Stats Band -->
-<section class="bg-ink py-14 sm:py-16 text-white">
+<!-- Stats -->
+<section class="bg-ink py-14 sm:py-16">
   <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
     <div class="grid gap-10 text-center sm:grid-cols-3">
       <div>
-        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">12+</p>
+        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">12</p>
         <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Years of Craftsmanship</p>
       </div>
       <div>
-        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">800+</p>
-        <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Custom Designs</p>
+        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">5</p>
+        <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Signature Categories</p>
       </div>
       <div>
-        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">1,000+</p>
+        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">800</p>
+        <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Handcrafted Designs</p>
+      </div>
+      <div>
+        <p class="font-display text-4xl font-semibold text-gold sm:text-5xl">1000</p>
         <p class="mt-2 text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">Happy Homes</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Values -->
+<section class="bg-cream py-16 sm:py-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="eyebrow justify-center">
+        <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+        Why Choose Us
+        <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+      </p>
+      <h2 class="title-lg">Furniture worth living with</h2>
+    </div>
+
+    <div class="mt-12 grid items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+      <div class="h-full">
+        <div class="card card-hover group relative h-full overflow-hidden p-8">
+          <span class="absolute top-0 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" aria-hidden="true"></span>
+          <span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-gold-pale text-gold-deep transition-all duration-200 group-hover:bg-gold group-hover:text-ink group-hover:shadow-gold">
+            {% include "includes/icons/hammer.html" with class="h-6 w-6" %}
+          </span>
+          <h3 class="title-md mt-6 text-ink">Premium Craftsmanship</h3>
+          <p class="mt-3 text-sm leading-relaxed text-stone">Every joint, edge and finish is handled by skilled craftsmen who take pride in their work.</p>
+        </div>
+      </div>
+      <div class="h-full">
+        <div class="card card-hover group relative h-full overflow-hidden p-8">
+          <span class="absolute top-0 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" aria-hidden="true"></span>
+          <span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-gold-pale text-gold-deep transition-all duration-200 group-hover:bg-gold group-hover:text-ink group-hover:shadow-gold">
+            {% include "includes/icons/shield.html" with class="h-6 w-6" %}
+          </span>
+          <h3 class="title-md mt-6 text-ink">Honest Materials</h3>
+          <p class="mt-3 text-sm leading-relaxed text-stone">Solid wood, quality hardware and durable finishes – no shortcuts, no hidden surprises.</p>
+        </div>
+      </div>
+      <div class="h-full">
+        <div class="card card-hover group relative h-full overflow-hidden p-8">
+          <span class="absolute top-0 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" aria-hidden="true"></span>
+          <span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-gold-pale text-gold-deep transition-all duration-200 group-hover:bg-gold group-hover:text-ink group-hover:shadow-gold">
+            {% include "includes/icons/ruler.html" with class="h-6 w-6" %}
+          </span>
+          <h3 class="title-md mt-6 text-ink">Custom Furniture</h3>
+          <p class="mt-3 text-sm leading-relaxed text-stone">Need a special size or finish? We build custom pieces to fit your space perfectly.</p>
+        </div>
+      </div>
+      <div class="h-full">
+        <div class="card card-hover group relative h-full overflow-hidden p-8">
+          <span class="absolute top-0 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" aria-hidden="true"></span>
+          <span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-gold-pale text-gold-deep transition-all duration-200 group-hover:bg-gold group-hover:text-ink group-hover:shadow-gold">
+            {% include "includes/icons/truck.html" with class="h-6 w-6" %}
+          </span>
+          <h3 class="title-md mt-6 text-ink">Delivery &amp; Assembly</h3>
+          <p class="mt-3 text-sm leading-relaxed text-stone">Careful transport to your door with professional assembly – you simply enjoy it.</p>
+        </div>
+      </div>
+      <div class="h-full">
+        <div class="card card-hover group relative h-full overflow-hidden p-8">
+          <span class="absolute top-0 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" aria-hidden="true"></span>
+          <span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-gold-pale text-gold-deep transition-all duration-200 group-hover:bg-gold group-hover:text-ink group-hover:shadow-gold">
+            {% include "includes/icons/tag.html" with class="h-6 w-6" %}
+          </span>
+          <h3 class="title-md mt-6 text-ink">Fair, Transparent Pricing</h3>
+          <p class="mt-3 text-sm leading-relaxed text-stone">Honest showroom prices, discussed openly. No hidden costs, ever.</p>
+        </div>
+      </div>
+      <div class="h-full">
+        <div class="card card-hover group relative h-full overflow-hidden p-8">
+          <span class="absolute top-0 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" aria-hidden="true"></span>
+          <span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-gold-pale text-gold-deep transition-all duration-200 group-hover:bg-gold group-hover:text-ink group-hover:shadow-gold">
+            {% include "includes/icons/phone.html" with class="h-6 w-6" %}
+          </span>
+          <h3 class="title-md mt-6 text-ink">Dedicated Support</h3>
+          <p class="mt-3 text-sm leading-relaxed text-stone">Questions before or after your purchase? Our team is one message away.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Visit us -->
+<section class="bg-linen pb-16 sm:pb-20">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
+    <div class="rounded-[24px] bg-white p-8 shadow-soft ring-1 ring-line sm:p-10">
+      <div class="grid items-center gap-8 lg:grid-cols-[1fr_auto]">
+        <div>
+          <p class="eyebrow">
+            <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+            Visit the Showroom
+          </p>
+          <h2 class="mt-2 font-display text-2xl font-semibold sm:text-3xl">Come and feel the quality yourself</h2>
+          <p class="mt-4 max-w-xl text-sm leading-relaxed text-stone">
+            {{ SITE.address }} · {{ SITE.hours }}. Prefer a chat first? Call
+            <a href="tel:+{{ SITE.phone_intl }}" class="font-semibold text-gold-deep underline-offset-2 hover:underline">{{ SITE.phone_display }}</a>
+            – we reply quickly.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row lg:flex-col">
+          <a href="{{ SITE.maps_url }}" target="_blank" rel="noopener noreferrer" class="btn-gold">View on Google Maps</a>
+          <a href="tel:+{{ SITE.phone_intl }}" class="btn-outline-dark">Call {{ SITE.phone_display }}</a>
+        </div>
       </div>
     </div>
   </div>

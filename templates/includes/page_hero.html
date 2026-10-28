@@ -1,27 +1,28 @@
 {% load static %}
-<div class="relative overflow-hidden bg-ink py-16 text-white sm:py-24">
-  {% if image %}
-    <div class="absolute inset-0 opacity-25">
-      <img src="{% static image|slice:'1:' %}" alt="" class="h-full w-full object-cover">
-    </div>
-  {% endif %}
-  <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-transparent"></div>
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 relative">
-    <div class="max-w-2xl">
-      {% if eyebrow %}
+<section class="px-0 pt-0 sm:px-6 sm:pt-6">
+  <div class="relative mx-auto flex max-w-[1400px] flex-col justify-end overflow-hidden bg-ink max-sm:rounded-none sm:rounded-[24px]">
+    <div class="relative px-5 pt-16 pb-14 sm:px-8 sm:pt-20 sm:pb-16 lg:px-12">
+      {% if image %}
+        <div class="absolute inset-0">
+          <img src="{% static image|slice:'1:' %}" alt="" class="h-full w-full object-cover opacity-30">
+          <div class="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/70 to-ink/40" aria-hidden="true"></div>
+        </div>
+      {% endif %}
+
+      <div class="relative mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
         <p class="eyebrow-dark">
           <span class="h-px w-8 bg-gold" aria-hidden="true"></span>
           {{ eyebrow }}
         </p>
-      {% endif %}
-      <h1 class="text-3xl font-display font-semibold sm:text-5xl lg:text-6xl text-white">
-        <span class="text-gold-gradient">{{ title }}</span>
-      </h1>
-      {% if description %}
-        <p class="mt-4 text-sm leading-relaxed text-mist sm:text-base max-w-xl">
-          {{ description }}
-        </p>
-      {% endif %}
+        <h1 class="max-w-3xl font-display text-[2rem] leading-[1.12] font-semibold text-white text-balance sm:text-5xl lg:text-6xl">
+          {{ title }}
+        </h1>
+        {% if description %}
+          <p class="mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70 sm:text-lg">
+            {{ description }}
+          </p>
+        {% endif %}
+      </div>
     </div>
   </div>
-</div>
+</section>

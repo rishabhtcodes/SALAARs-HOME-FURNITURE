@@ -2,133 +2,63 @@
 {% load static %}
 
 {% block title %}Frequently Asked Questions | {{ SITE.name }}{% endblock %}
+{% block description %}Answers about delivery, custom furniture, payment methods, contact details, delivery times and warranty at {{ SITE.name }} in Karachi.{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq_items %}{"@type": "Question", "name": "{{ item.question|escapejs }}", "acceptedAnswer": {"@type": "Answer", "text": "{{ item.answer|escapejs }}"}}{% if not forloop.last %},{% endif %}{% endfor %}
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
-{% include "includes/page_hero.html" with title="Frequently Asked Questions" eyebrow="Clear Answers" description="Everything you need to know about materials, delivery, custom orders, and our Karachi showroom." image="/banners/2.webp" %}
+{% include "includes/page_hero.html" with title="Frequently Asked Questions" eyebrow="Good to Know" description="Everything you need to know about delivery, custom orders, payment and warranty." image="/banners/3.webp" %}
 
-<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
-    <span class="text-mist">/</span>
-    <span class="font-medium text-ink">FAQ</span>
-  </div>
-</nav>
+{% include "includes/breadcrumb.html" with items=breadcrumb_items %}
 
 <section class="bg-linen py-16 sm:py-20">
-  <div class="mx-auto w-full max-w-4xl px-4 sm:px-6">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
     <div class="space-y-12">
-      <!-- Group 1: Materials & Craftsmanship -->
-      <div>
-        <h2 class="mb-5 flex items-center gap-3 font-display text-xl font-semibold text-ink sm:text-2xl">
-          <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
-          Materials & Craftsmanship
-        </h2>
-        <div class="faq-group overflow-hidden rounded-2xl bg-linen shadow-soft ring-1 ring-ink/5">
-          <div class="faq-item border-b border-ink/5">
-            <button type="button" class="faq-toggle flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-gold/5 sm:px-7">
-              <span class="text-sm font-semibold text-gold-deep sm:text-base">What types of wood do you use?</span>
-              <span class="faq-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gold bg-gold text-ink transition-transform rotate-180">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 9 6 6 6-6"/></svg>
-              </span>
-            </button>
-            <div class="faq-content px-5 pb-6 text-sm leading-relaxed text-stone sm:px-7">
-              We primarily build with solid seasoned woods – Oak, Acacia, Walnut finish, and premium Sheesham/Mahogany. Where structural integrity or large flat panels benefit from modern durability, we use heavy high-density moisture-resistant MDF accents coated with protective lacquer.
-            </div>
-          </div>
-
-          <div class="faq-item border-b border-ink/5">
-            <button type="button" class="faq-toggle flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-gold/5 sm:px-7">
-              <span class="text-sm font-semibold text-ink sm:text-base">Can I customize the size or finish of any design?</span>
-              <span class="faq-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink/15 text-gold-deep transition-transform">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 9 6 6 6-6"/></svg>
-              </span>
-            </button>
-            <div class="faq-content hidden px-5 pb-6 text-sm leading-relaxed text-stone sm:px-7">
-              Yes, absolutely! Because we operate our own workshop in Karachi, almost every piece in our catalogue can be made-to-measure. Whether you need a bed sized to a custom mattress or a wardrobe built to wall-to-wall ceiling height, our craftsmen will accommodate your specifications.
-            </div>
+      {% for group in faq_groups %}
+        <div>
+          <h2 class="mb-5 flex items-center gap-3 font-display text-xl font-semibold text-ink sm:text-2xl">
+            <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+            {{ group.title }}
+          </h2>
+          <div class="overflow-hidden rounded-2xl bg-linen shadow-soft ring-1 ring-ink/5">
+            {% for item in group.items.all %}
+              <div class="faq-item border-b border-ink/5 last:border-b-0">
+                <button type="button" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" class="faq-toggle flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-gold/5 sm:px-7">
+                  <span class="text-sm font-semibold sm:text-base {% if forloop.first %}text-gold-deep{% else %}text-ink{% endif %}">{{ item.question }}</span>
+                  <span class="faq-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all duration-300 {% if forloop.first %}rotate-180 border-gold bg-gold text-ink{% else %}border-ink/15 text-gold-deep{% endif %}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m6 9 6 6 6-6"></path></svg>
+                  </span>
+                </button>
+                <div class="faq-content grid transition-all duration-300 ease-out {% if forloop.first %}grid-rows-[1fr] opacity-100{% else %}grid-rows-[0fr] opacity-0{% endif %}">
+                  <div class="overflow-hidden">
+                    <p class="px-5 pb-6 text-sm leading-relaxed text-stone sm:px-7">{{ item.answer }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
           </div>
         </div>
-      </div>
-
-      <!-- Group 2: Orders, Delivery & Assembly -->
-      <div>
-        <h2 class="mb-5 flex items-center gap-3 font-display text-xl font-semibold text-ink sm:text-2xl">
-          <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
-          Delivery & Assembly
-        </h2>
-        <div class="faq-group overflow-hidden rounded-2xl bg-linen shadow-soft ring-1 ring-ink/5">
-          <div class="faq-item border-b border-ink/5">
-            <button type="button" class="faq-toggle flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-gold/5 sm:px-7">
-              <span class="text-sm font-semibold text-ink sm:text-base">How long does delivery take?</span>
-              <span class="faq-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink/15 text-gold-deep transition-transform">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 9 6 6 6-6"/></svg>
-              </span>
-            </button>
-            <div class="faq-content hidden px-5 pb-6 text-sm leading-relaxed text-stone sm:px-7">
-              In-stock items like side tables and display dressers are typically dispatched within 1–3 business days. Full custom bedroom suites and made-to-order wardrobes require careful joinery and finishing, taking between 7 to 20 days.
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button type="button" class="faq-toggle flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-gold/5 sm:px-7">
-              <span class="text-sm font-semibold text-ink sm:text-base">Do you provide assembly services in Karachi?</span>
-              <span class="faq-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink/15 text-gold-deep transition-transform">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 9 6 6 6-6"/></svg>
-              </span>
-            </button>
-            <div class="faq-content hidden px-5 pb-6 text-sm leading-relaxed text-stone sm:px-7">
-              Yes! For deliveries in Karachi, our professional transport team carries your furniture directly into your chosen room and completes full assembly on site so you can enjoy your furniture immediately.
-            </div>
-          </div>
-        </div>
-      </div>
+      {% endfor %}
     </div>
 
-    <!-- Still Have Questions CTA -->
-    <div class="mt-14 rounded-[24px] bg-ink p-8 text-center sm:p-10 text-white">
-      <h3 class="font-display text-2xl font-semibold text-white sm:text-3xl">Still have questions?</h3>
-      <p class="mt-3 text-sm text-white/70">
-        Call or visit our showroom on {{ SITE.phone_display }} – we are always happy to help.
-      </p>
+    <div class="mt-14 rounded-[24px] bg-ink p-8 text-center sm:p-10">
+      <h2 class="font-display text-2xl font-semibold text-white sm:text-3xl">Still have a question?</h2>
+      <p class="mt-3 text-sm text-white/70">Call us on {{ SITE.phone_display }} – we usually reply within minutes.</p>
       <div class="mt-7 flex flex-wrap justify-center gap-4">
-        <a href="tel:+{{ SITE.phone_intl }}" class="btn-gold">
-          {% include "includes/icons/phone.html" with class="h-4 w-4" %}
-          Call {{ SITE.phone_display }}
-        </a>
-        <a href="{% url 'contact' %}" class="btn-outline-light">
-          Contact Page
-        </a>
+        <a href="tel:+{{ SITE.phone_intl }}" class="btn-gold">Call {{ SITE.phone_display }}</a>
+        <a href="{% url 'contact' %}" class="btn-outline-light">Contact Page</a>
       </div>
     </div>
   </div>
 </section>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const toggles = document.querySelectorAll(".faq-toggle");
-  toggles.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const parent = btn.closest(".faq-item");
-      const content = parent.querySelector(".faq-content");
-      const icon = parent.querySelector(".faq-icon");
-      const title = btn.querySelector("span");
-
-      const isHidden = content.classList.contains("hidden");
-      if (isHidden) {
-        content.classList.remove("hidden");
-        icon.classList.add("rotate-180", "border-gold", "bg-gold", "text-ink");
-        icon.classList.remove("border-ink/15", "text-gold-deep");
-        title.classList.add("text-gold-deep");
-        title.classList.remove("text-ink");
-      } else {
-        content.classList.add("hidden");
-        icon.classList.remove("rotate-180", "border-gold", "bg-gold", "text-ink");
-        icon.classList.add("border-ink/15", "text-gold-deep");
-        title.classList.remove("text-gold-deep");
-        title.classList.add("text-ink");
-      }
-    });
-  });
-});
-</script>
 {% endblock %}

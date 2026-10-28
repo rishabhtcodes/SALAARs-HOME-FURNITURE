@@ -1,13 +1,95 @@
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, Http404
-from django.db.models import Q
+from django.http import JsonResponse, Http404, HttpResponse
+from django.utils import timezone
+from django.db.models import Q, F
+from django.db.models.functions import Lower
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from .models import Category, NavCategory, Product, Cart, CartItem, Order, OrderItem
+from .models import (
+    Category,
+    NavCategory,
+    FAQGroup,
+    Product,
+    Cart,
+    CartItem,
+    Order,
+    OrderItem,
+)
 from .forms import CheckoutForm, RegisterForm
+import re
+
+
+_PRICE_TOKEN_RE = re.compile(r"^(\d+(?:\.\d+)?)\s*(tr|trieu|triệu|m|milion|million|k|nghin)?$")
+
+
+def parse_price_token(token):
+    value = token.replace(",", ".").strip().lower()
+    match = _PRICE_TOKEN_RE.match(value)
+    if not match:
+        return None
+    amount = float(match.group(1))
+    unit = match.group(2)
+    if unit in ("tr", "trieu", "triệu", "m", "milion", "million"):
+        amount *= 1_000_000
+    elif unit in ("k", "nghin"):
+        amount *= 1_000
+    return amount
+
+
+def product_search_filter(query):
+    search = (
+        Q(name__icontains=query)
+        | Q(category__name__icontains=query)
+        | Q(category__short__icontains=query)
+        | Q(material__icontains=query)
+        | Q(delivery_time__icontains=query)
+        | Q(color__icontains=query)
+        | Q(description__icontains=query)
+    )
+
+    token = parse_price_token(query)
+    if token is not None and token.is_integer():
+        search |= Q(price=token)
+
+    digits = re.sub(r"\D", "", query)
+    if digits:
+        price_ids = [
+            p.id
+            for p in Product.objects.exclude(price=None).only("id", "price")
+            if digits in f"{int(p.price):,}"
+        ]
+        if price_ids:
+            search |= Q(id__in=price_ids)
+
+    return search
+
+
+def search_products(query, limit=None):
+    matches = list(
+        Product.objects.filter(product_search_filter(query)).select_related("category")
+    )
+    if not query:
+        return matches, len(matches)
+
+    needle = query.lower()
+    matches.sort(
+        key=lambda p: (
+            -(
+                (3 if needle in p.name.lower() else 0)
+                + 1
+                + (2 if p.best_selling else 0)
+                + (1 if p.featured else 0)
+                + (1 if p.is_new else 0)
+            ),
+            -(p.order or 0),
+        )
+    )
+    total = len(matches)
+    return (matches[:limit] if limit else matches), total
 
 
 def get_or_create_cart(request):
@@ -36,8 +118,16 @@ def get_or_create_cart(request):
 
 def home_view(request):
     categories = Category.objects.all().order_by("order")
+
+    active_tab = request.GET.get("tab", "all")
+    best_seller_qs = Product.objects.all()
+    if active_tab != "all" and Product.objects.filter(category__slug=active_tab).exists():
+        best_seller_qs = best_seller_qs.filter(category__slug=active_tab)
+    else:
+        active_tab = "all"
+
     # Best sellers (limit 8, prioritized best_selling)
-    best_sellers = Product.objects.all().order_by("-best_selling", "order")[:8]
+    best_sellers = best_seller_qs.order_by("-best_selling", "order")[:8]
     
     # Pack featured categories with product count and first product image
     featured_cats = []
@@ -53,6 +143,7 @@ def home_view(request):
     context = {
         "featured_categories": featured_cats,
         "best_selling_products": best_sellers,
+        "active_tab": active_tab,
     }
     return render(request, "pages/home.html", context)
 
@@ -70,13 +161,7 @@ def shop_view(request):
     tags = request.GET.getlist("tag")
 
     if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(category__name__icontains=query) |
-            Q(material__icontains=query) |
-            Q(delivery_time__icontains=query) |
-            Q(color__icontains=query)
-        )
+        products = products.filter(product_search_filter(query))
 
     if category_slug != "all":
         products = products.filter(category__slug=category_slug)
@@ -107,21 +192,45 @@ def shop_view(request):
     if "isNew" in tags:
         products = products.filter(is_new=True)
 
-    if sort == "newest":
-        products = products.order_by("-is_new", "order", "-id")
+    if sort == "oldest":
+        products = products.order_by("order", "id")
     elif sort == "price-asc":
-        products = products.order_by("price")
+        products = products.order_by(F("price").asc(nulls_last=True), "order")
     elif sort == "price-desc":
-        products = products.order_by("-price")
-    elif sort == "name-asc":
-        products = products.order_by("name")
+        products = products.order_by(F("price").desc(nulls_last=True), "order")
+    elif sort == "az":
+        products = products.order_by(Lower("name"))
+    elif sort == "za":
+        products = products.order_by(Lower("name").desc())
+    else:
+        sort = "newest"
+        products = products.order_by("-order", "-id")
 
-    all_deliveries = Product.objects.values_list("delivery_time", flat=True).distinct()
-    all_materials = Product.objects.exclude(material__isnull=True).exclude(material="").values_list("material", flat=True).distinct()
-    all_colors = Product.objects.exclude(color__isnull=True).exclude(color="").values_list("color", flat=True).distinct()
+    def distinct_in_order(field):
+        values = []
+        for value in Product.objects.order_by("order", "id").values_list(field, flat=True):
+            if value and value not in values:
+                values.append(value)
+        return values
+
+    all_deliveries = distinct_in_order("delivery_time")
+    all_materials = distinct_in_order("material")
+    all_colors = distinct_in_order("color")
+
+    has_active_filters = bool(
+        query
+        or category_slug != "all"
+        or price_range != "any"
+        or delivery
+        or material
+        or color
+        or availability != "all"
+        or tags
+    )
 
     context = {
         "products": products,
+        "product_count": products.count(),
         "query": query,
         "active_category": category_slug,
         "price_range": price_range,
@@ -131,9 +240,31 @@ def shop_view(request):
         "selected_availability": availability,
         "selected_tags": tags,
         "sort": sort,
-        "all_deliveries": [d for d in all_deliveries if d],
-        "all_materials": [m for m in all_materials if m],
-        "all_colors": [c for c in all_colors if c],
+        "all_deliveries": all_deliveries,
+        "all_materials": all_materials,
+        "all_colors": all_colors,
+        "has_active_filters": has_active_filters,
+        "price_ranges": [
+            ("any", "Any price"),
+            ("lt10", "Under 50K"),
+            ("10-30", "50K – 150K"),
+            ("30-60", "150K – 300K"),
+            ("gt60", "Above 300K"),
+        ],
+        "availability_options": [
+            ("all", "All"),
+            ("In Stock", "In Stock"),
+            ("Made to Order", "Made to Order"),
+        ],
+        "tag_options": [
+            ("featured", "Featured"),
+            ("bestSelling", "Best Selling"),
+            ("isNew", "Latest"),
+        ],
+        "breadcrumbs": [
+            {"label": "Home", "url": "/"},
+            {"label": "Shop All Furniture"},
+        ],
     }
     return render(request, "pages/shop.html", context)
 
@@ -147,6 +278,11 @@ def nav_category_view(request, slug):
     context = {
         "item": nav_item,
         "products": products,
+        "breadcrumbs": [
+            {"label": "Home", "url": "/"},
+            {"label": "Shop", "url": "/shop"},
+            {"label": nav_item.label},
+        ],
     }
     return render(request, "pages/category.html", context)
 
@@ -157,64 +293,109 @@ def direct_category_view(request, category):
     context = {
         "info": cat,
         "products": products,
+        "breadcrumbs": [
+            {"label": "Home", "url": "/"},
+            {"label": "Shop", "url": "/shop"},
+            {"label": cat.name},
+        ],
     }
     return render(request, "pages/direct_category.html", context)
 
 
 def product_detail_view(request, slug):
     product = get_object_or_404(Product, slug=slug)
-    related = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
 
-    gallery = [product.image]
-    if product.gallery:
-        for g in product.gallery:
-            if g not in gallery:
-                gallery.append(g)
+    related = list(
+        Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+    )
+    if len(related) < 4:
+        ids = [product.id] + [p.id for p in related]
+        related += list(
+            Product.objects.exclude(id__in=ids).order_by("order", "id")[: 4 - len(related)]
+        )
+
+    gallery = []
+    for image in [product.image, *(product.gallery or [])]:
+        if image and image not in gallery:
+            gallery.append(image)
+    for image in product.category.products.values_list("image", flat=True):
+        if image and image not in gallery:
+            gallery.append(image)
 
     context = {
         "product": product,
         "related_products": related,
         "gallery": gallery,
+        "thumbnails": gallery[:8],
+        "breadcrumb_items": [
+            {"label": "Home", "url": "/"},
+            {"label": "Shop", "url": "/shop"},
+            {"label": product.category.name, "url": f"/{product.category.slug}"},
+            {"label": product.name},
+        ],
     }
     return render(request, "pages/product_detail.html", context)
 
 
 def about_view(request):
-    return render(request, "pages/about.html")
+    return render(
+        request,
+        "pages/about.html",
+        {
+            "breadcrumb_items": [
+                {"label": "Home", "url": "/"},
+                {"label": "Furnishing Homes With Care"},
+            ]
+        },
+    )
 
 
 def contact_view(request):
-    return render(request, "pages/contact.html")
+    return render(
+        request,
+        "pages/contact.html",
+        {
+            "breadcrumb_items": [
+                {"label": "Home", "url": "/"},
+                {"label": "Contact Us"},
+            ]
+        },
+    )
 
 
 def faq_view(request):
-    return render(request, "pages/faq.html")
+    groups = FAQGroup.objects.prefetch_related("items").all()
+    faq_items = [item for group in groups for item in group.items.all()]
+    context = {
+        "faq_groups": groups,
+        "faq_items": faq_items,
+        "breadcrumb_items": [
+            {"label": "Home", "url": "/"},
+            {"label": "Frequently Asked Questions"},
+        ],
+    }
+    return render(request, "pages/faq.html", context)
 
 
 def search_api_view(request):
     query = request.GET.get("q", "").strip()
-    if len(query) < 2:
-        return JsonResponse({"results": []})
+    if len(query) < 1:
+        return JsonResponse({"results": [], "total": 0})
 
-    qs = Product.objects.filter(
-        Q(name__icontains=query) |
-        Q(category__name__icontains=query) |
-        Q(material__icontains=query) |
-        Q(delivery_time__icontains=query)
-    )[:8]
+    matches, total = search_products(query, limit=8)
 
     results = []
-    for p in qs:
+    for p in matches:
         results.append({
             "id": p.id,
             "name": p.name,
             "slug": p.slug,
             "category": p.category.name,
-            "price": p.formatted_price,
+            "price": f"Rs. {int(p.price):,}" if p.price else "–",
             "image": p.image,
             "delivery": p.delivery_time,
         })
-    return JsonResponse({"results": results})
+    return JsonResponse({"results": results, "total": total})
 
 
 def cart_view(request):
@@ -230,8 +411,11 @@ def cart_view(request):
 def add_to_cart_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart = get_or_create_cart(request)
-    
-    qty = int(request.POST.get("quantity", 1))
+
+    try:
+        qty = max(1, int(request.POST.get("quantity", 1)))
+    except (TypeError, ValueError):
+        qty = 1
     cart_item, created = CartItem.objects.get_or_create(
         cart=cart, product=product,
         defaults={"quantity": qty}
@@ -257,7 +441,10 @@ def update_cart_view(request, item_id):
     if cart_item.cart != cart:
         raise Http404
 
-    qty = int(request.POST.get("quantity", 1))
+    try:
+        qty = int(request.POST.get("quantity", 1))
+    except (TypeError, ValueError):
+        qty = 1
     if qty > 0:
         cart_item.quantity = qty
         cart_item.save()
@@ -399,35 +586,46 @@ def not_found_view(request, exception=None):
 
 def robots_txt_view(request):
     lines = [
-        "User-agent: *",
+        "User-Agent: *",
         "Allow: /",
-        f"Sitemap: {request.build_absolute_uri('/sitemap.xml')}"
+        "",
+        f"Sitemap: {settings.SITE_URL.rstrip('/')}/sitemap.xml",
+        "",
     ]
-    from django.http import HttpResponse
     return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
 def sitemap_xml_view(request):
-    base_url = request.build_absolute_uri("/").rstrip("/")
-    static_routes = ["", "/about/", "/shop/", "/contact/", "/faq/"]
-    urls = [f"{base_url}{r}" for r in static_routes]
+    base_url = settings.SITE_URL.rstrip("/")
+    lastmod = timezone.now().isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
-    for cat in NavCategory.objects.all():
-        urls.append(f"{base_url}/category/{cat.slug}/")
+    routes = [
+        ("/", "weekly", "1"),
+        ("/shop", "weekly", "0.9"),
+        ("/contact", "monthly", "0.7"),
+        ("/faq", "monthly", "0.6"),
+        ("/about", "monthly", "0.5"),
+    ]
+    urls = [(f"{base_url}{path}", freq, priority) for path, freq, priority in routes]
 
-    for cat in Category.objects.all():
-        urls.append(f"{base_url}/{cat.slug}/")
+    for cat in NavCategory.objects.order_by("order"):
+        urls.append((f"{base_url}/category/{cat.slug}", "weekly", "0.8"))
 
-    for prod in Product.objects.all():
-        urls.append(f"{base_url}/product/{prod.slug}/")
+    for cat in Category.objects.order_by("order"):
+        urls.append((f"{base_url}/{cat.slug}", "weekly", "0.9"))
+
+    for prod in Product.objects.exclude(item_id__contains="-ph-").order_by("order"):
+        urls.append((f"{base_url}/product/{prod.slug}", "monthly", "0.7"))
 
     xml_lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
     ]
-    for u in urls:
-        xml_lines.append(f"  <url><loc>{u}</loc><changefreq>weekly</changefreq></url>")
+    for loc, freq, priority in urls:
+        xml_lines.append(
+            f"  <url><loc>{loc}</loc><lastmod>{lastmod}</lastmod>"
+            f"<changefreq>{freq}</changefreq><priority>{priority}</priority></url>"
+        )
     xml_lines.append('</urlset>')
 
-    from django.http import HttpResponse
     return HttpResponse("\n".join(xml_lines), content_type="application/xml")

@@ -2,95 +2,122 @@
 {% load static %}
 
 {% block title %}{{ product.name }} | {{ SITE.name }}{% endblock %}
-{% block description %}{{ product.description|default:product.category.short }}{% endblock %}
+{% block description %}{% if product.description %}{{ product.description }}{% else %}{{ product.name }} – {{ product.category.short }} Made by {{ SITE.name }}. {{ product.category.material }}{% endif %}{% endblock %}
+
+{% block open_graph %}
+<meta property="og:title" content="{{ product.name }} | {{ SITE.name }}">
+<meta property="og:description" content="{% if product.description %}{{ product.description }}{% else %}{{ product.name }} – {{ product.category.short }} Made by {{ SITE.name }}. {{ product.category.material }}{% endif %}">
+<meta property="og:image" content="{{ SITE.url }}{% static product.image|slice:'1:' %}">
+<meta property="og:type" content="website">
+{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.name|escapejs }}",
+  "image": [{% for img in gallery %}"{{ SITE.url }}{{ img|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+  "description": "{{ product.description|default:product.category.short|escapejs }}",
+  "brand": { "@type": "Brand", "name": "{{ SITE.name|escapejs }}" },
+  "category": "{{ product.category.name|escapejs }}",
+  "material": "{{ product.material|default:product.category.material|escapejs }}",
+  {% if product.color %}"color": "{{ product.color|escapejs }}",{% endif %}
+  "sku": "{{ product.item_id|escapejs }}",
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ SITE.url }}/product/{{ product.slug }}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "{% if product.availability == 'In Stock' %}https://schema.org/InStock{% else %}https://schema.org/PreOrder{% endif %}",
+    "priceCurrency": "PKR"{% if product.price %},
+    "price": "{{ product.price }}"{% endif %}
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ SITE.url }}" },
+    { "@type": "ListItem", "position": 2, "name": "Shop", "item": "{{ SITE.url }}/shop" },
+    { "@type": "ListItem", "position": 3, "name": "{{ product.category.name|escapejs }}", "item": "{{ SITE.url }}/{{ product.category.slug }}" },
+    { "@type": "ListItem", "position": 4, "name": "{{ product.name|escapejs }}", "item": "{{ SITE.url }}/product/{{ product.slug }}" }
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
-<nav aria-label="Breadcrumb" class="bg-linen/60 py-3 text-xs text-stone border-b border-line/60">
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-    <a href="{% url 'home' %}" class="hover:text-gold-deep transition-colors">Home</a>
-    <span class="text-mist">/</span>
-    <a href="{% url 'shop' %}" class="hover:text-gold-deep transition-colors">Shop</a>
-    <span class="text-mist">/</span>
-    <a href="{% url 'direct_category' product.category.slug %}" class="hover:text-gold-deep transition-colors">{{ product.category.name }}</a>
-    <span class="text-mist">/</span>
-    <span class="font-medium text-ink">{{ product.name }}</span>
-  </div>
-</nav>
+{% include "includes/breadcrumb.html" with items=breadcrumb_items %}
 
 <section class="bg-cream py-12 sm:py-16 lg:py-20">
-  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
-    <!-- Gallery Column -->
+  <div class="mx-auto grid w-full max-w-[1400px] gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 xl:px-12">
+    <!-- Gallery -->
     <div>
-      <!-- Main Photo Frame -->
-      <div id="main-photo-container" class="group relative block aspect-[4/5] w-full overflow-hidden rounded-[24px] bg-beige text-left shadow-soft ring-1 ring-line">
-        <img id="main-product-img" src="{% static product.image|slice:'1:' %}" alt="{{ product.name }}" class="h-full w-full object-contain p-4 transition-transform duration-300 ease-out group-hover:scale-[1.04] sm:p-6" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
-        <span class="pointer-events-none absolute bottom-4 left-4 rounded-full bg-ink/75 px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
-          {{ product.category.name }}
+      <button type="button" id="gallery-main-btn" aria-label="Open fullscreen view" class="group relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden rounded-[24px] bg-beige text-left shadow-soft ring-1 ring-line">
+        <img id="main-product-img" src="{% static product.image|slice:'1:' %}" alt="{{ product.name }} – 1 / {{ gallery|length }}" class="h-full w-full object-contain p-4 transition-transform duration-300 ease-out group-hover:scale-[1.04] sm:p-6" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+        <span class="pointer-events-none absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/85 text-ink shadow-card backdrop-blur-sm transition-all duration-300 group-hover:bg-gold group-hover:text-ink sm:top-5 sm:right-5" aria-hidden="true">
+          {% include "includes/icons/maximize.html" with class="h-4.5 w-4.5" %}
         </span>
+        <span id="gallery-counter" class="pointer-events-none absolute bottom-4 left-4 rounded-full bg-ink/75 px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm">1 / {{ gallery|length }}</span>
+      </button>
+
+      {% for img in gallery %}
+        <span class="hidden" data-gallery-src="{% static img|slice:'1:' %}" data-gallery-alt="{{ product.name }} – {{ forloop.counter }} / {{ gallery|length }}" aria-hidden="true"></span>
+      {% endfor %}
+
+      <div class="mt-4 grid grid-cols-4 gap-2.5 sm:grid-cols-5 lg:grid-cols-8 lg:gap-3">
+        {% for img in thumbnails %}
+          <button type="button" aria-label="{{ product.name }} – photo {{ forloop.counter }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" class="gallery-thumb relative aspect-square overflow-hidden rounded-xl bg-beige ring-2 transition-all duration-300 {% if forloop.first %}ring-gold shadow-gold{% else %}ring-transparent opacity-60 hover:opacity-100{% endif %}" data-src="{% static img|slice:'1:' %}" data-index="{{ forloop.counter0 }}">
+            <img src="{% static img|slice:'1:' %}" alt="" loading="lazy" class="h-full w-full object-contain p-1.5" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+          </button>
+        {% endfor %}
       </div>
 
-      <!-- Thumbnails -->
-      {% if gallery|length > 1 %}
-        <div class="mt-4 grid grid-cols-4 gap-2.5 sm:grid-cols-5 lg:grid-cols-8 lg:gap-3">
-          {% for img in gallery %}
-            <button type="button" class="gallery-thumb relative aspect-square overflow-hidden rounded-xl bg-beige ring-2 transition-all duration-300 {% if forloop.first %}ring-gold shadow-gold{% else %}ring-transparent opacity-60 hover:opacity-100{% endif %}" data-src="{% static img|slice:'1:' %}">
-              <img src="{% static img|slice:'1:' %}" alt="" class="h-full w-full object-contain p-1.5" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
-            </button>
-          {% endfor %}
-        </div>
-      {% endif %}
+      <p class="mt-4 hidden items-center gap-2 text-[11px] font-semibold tracking-[0.18em] text-mist uppercase sm:flex">
+        {% include "includes/icons/chevron-left.html" with class="h-3.5 w-3.5" %}
+        Scroll to zoom · Drag to move · Esc to close
+        {% include "includes/icons/chevron-right.html" with class="h-3.5 w-3.5" %}
+      </p>
     </div>
 
-    <!-- Product Details Column -->
+    <!-- Details -->
     <div>
       <p class="eyebrow">
         <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
         {{ product.category.name }}
       </p>
+      <h1 class="text-[1.9rem] leading-[1.14] font-semibold text-balance sm:text-4xl lg:text-5xl">{{ product.name }}</h1>
 
-      <h1 class="text-[1.9rem] leading-[1.14] font-semibold text-balance sm:text-4xl lg:text-5xl text-ink">
-        {{ product.name }}
-      </h1>
-
-      <p class="mt-6 font-display text-2xl font-semibold tracking-wide text-gold-deep sm:text-3xl">
-        {{ product.formatted_price }}
-      </p>
-
+      <p class="mt-6 font-display text-2xl font-semibold tracking-wide text-gold-deep sm:text-3xl">{{ product.formatted_price }}</p>
       <p class="mt-2 text-sm text-stone">
-        {% if product.price %}
-          Price includes standard showroom finish and hardware.
-        {% else %}
-          Contact us for exact sizing and custom wood finish pricing.
-        {% endif %}
+        {% if product.price %}Best price confirmed directly – give us a call.{% else %}Call us – we will share the best price for this piece.{% endif %}
       </p>
 
-      <p class="mt-8 leading-relaxed text-stone">
-        {{ product.description|default:product.category.description }}
-      </p>
+      <p class="mt-8 leading-relaxed text-stone">{% if product.description %}{{ product.description }}{% else %}{{ product.category.description }} {{ product.category.short }}{% endif %}</p>
 
-      <!-- Specifications Card -->
+      <!-- Specifications -->
       <div class="mt-10 overflow-hidden rounded-2xl bg-linen shadow-soft ring-1 ring-line">
         <div class="flex items-start gap-4 px-6 py-5">
           <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9"/><path d="m18 15 4-4"/></svg>
+            {% include "includes/icons/hammer.html" with class="h-5 w-5" %}
           </span>
           <div>
             <p class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Material</p>
             <p class="mt-1 text-sm font-medium text-ink">{{ product.material|default:product.category.material }}</p>
           </div>
         </div>
-
-        <div class="flex items-start gap-4 px-6 py-5 border-t border-line">
+        <div class="flex items-start gap-4 border-t border-line px-6 py-5">
           <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/></svg>
+            {% include "includes/icons/ruler.html" with class="h-5 w-5" %}
           </span>
           <div>
             <p class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Dimensions</p>
             <p class="mt-1 text-sm font-medium text-ink">{{ product.dimensions|default:product.category.dimensions }}</p>
           </div>
         </div>
-
-        <div class="flex items-start gap-4 px-6 py-5 border-t border-line">
+        <div class="flex items-start gap-4 border-t border-line px-6 py-5">
           <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
             {% include "includes/icons/truck.html" with class="h-5 w-5" %}
           </span>
@@ -99,10 +126,9 @@
             <p class="mt-1 text-sm font-medium text-ink">{{ product.delivery_time }}</p>
           </div>
         </div>
-
-        <div class="flex items-start gap-4 px-6 py-5 border-t border-line">
+        <div class="flex items-start gap-4 border-t border-line px-6 py-5">
           <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-pale text-gold-deep">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            {% include "includes/icons/clock.html" with class="h-5 w-5" %}
           </span>
           <div>
             <p class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Availability</p>
@@ -111,43 +137,62 @@
         </div>
       </div>
 
-      <!-- Add to Cart Form + Call Actions -->
-      <div class="mt-9 flex flex-wrap gap-4">
-        <form action="{% url 'add_to_cart' product.id %}" method="post" class="flex items-center gap-3">
-          {% csrf_token %}
-          <input type="number" name="quantity" value="1" min="1" max="99" class="w-16 rounded-full border border-line bg-linen px-3 py-3 text-center text-sm font-semibold text-ink focus:border-gold focus:outline-none">
-          <button type="submit" class="btn-dark">
-            {% include "includes/icons/cart.html" with class="h-4 w-4" %}
-            Add to Cart
-          </button>
-        </form>
+      <!-- Features -->
+      <div class="mt-6 rounded-2xl bg-linen p-6 shadow-soft ring-1 ring-line">
+        <h2 class="text-[11px] font-semibold tracking-[0.25em] text-mist uppercase">Features</h2>
+        <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+          <li class="flex items-center gap-2.5 text-sm font-medium text-stone">
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-pale text-gold-deep">{% include "includes/icons/check.html" with class="h-3.5 w-3.5" %}</span>
+            Solid wood construction
+          </li>
+          <li class="flex items-center gap-2.5 text-sm font-medium text-stone">
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-pale text-gold-deep">{% include "includes/icons/check.html" with class="h-3.5 w-3.5" %}</span>
+            Custom sizes available
+          </li>
+          <li class="flex items-center gap-2.5 text-sm font-medium text-stone">
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-pale text-gold-deep">{% include "includes/icons/check.html" with class="h-3.5 w-3.5" %}</span>
+            Professional assembly
+          </li>
+          <li class="flex items-center gap-2.5 text-sm font-medium text-stone">
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-pale text-gold-deep">{% include "includes/icons/check.html" with class="h-3.5 w-3.5" %}</span>
+            Structural warranty
+          </li>
+        </ul>
+      </div>
 
+      <!-- Actions -->
+      <div class="mt-9 flex flex-wrap gap-4">
         <a href="tel:+{{ SITE.phone_intl }}" class="btn-gold">
           {% include "includes/icons/phone.html" with class="h-4 w-4" %}
           Call {{ SITE.phone_display }}
         </a>
-
-        <a href="{% url 'contact' %}" class="btn-outline-dark">
-          Inquire Now
-        </a>
+        <a href="{% url 'contact' %}" class="btn-outline-dark">Contact Us</a>
+        <form action="{% url 'add_to_cart' product.id %}" method="post" class="contents">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit" class="btn-outline-dark">
+            {% include "includes/icons/cart.html" with class="h-4 w-4" %}
+            Add to Cart
+          </button>
+        </form>
       </div>
-
-      <p class="mt-5 text-xs leading-relaxed text-stone">
-        Need custom dimensions or a specific wood stain? We make customized pieces to order for your space.
-      </p>
+      <p class="mt-5 text-xs leading-relaxed text-stone">Custom sizes and finishes available for this piece – just ask!</p>
     </div>
   </div>
 </section>
 
 <!-- Related Products -->
 {% if related_products %}
-<section class="bg-linen py-16 sm:py-20 border-t border-line">
+<section class="bg-beige py-16 sm:py-20">
   <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
-    <div class="mb-10 flex items-center justify-between">
-      <h2 class="title-md">More from {{ product.category.name }}</h2>
-      <a href="{% url 'direct_category' product.category.slug %}" class="link-underline text-xs font-semibold tracking-wider text-gold-deep uppercase">View Category →</a>
+    <div class="flex flex-col items-start text-left">
+      <p class="eyebrow">
+        <span class="h-px w-8 bg-gold-deep" aria-hidden="true"></span>
+        Continue Browsing
+      </p>
+      <h2 class="title-lg text-ink">You May Also Like</h2>
     </div>
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+    <div class="mt-12 grid grid-cols-2 items-stretch gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
       {% for rel in related_products %}
         {% include "includes/product_card.html" with product=rel %}
       {% endfor %}
@@ -156,21 +201,21 @@
 </section>
 {% endif %}
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const thumbs = document.querySelectorAll(".gallery-thumb");
-  const mainImg = document.getElementById("main-product-img");
-  thumbs.forEach(t => {
-    t.addEventListener("click", () => {
-      thumbs.forEach(other => {
-        other.classList.remove("ring-gold", "shadow-gold");
-        other.classList.add("ring-transparent", "opacity-60");
-      });
-      t.classList.remove("ring-transparent", "opacity-60");
-      t.classList.add("ring-gold", "shadow-gold");
-      if (mainImg) mainImg.src = t.dataset.src;
-    });
-  });
-});
-</script>
+<!-- Lightbox -->
+<div id="product-lightbox" class="fixed inset-0 z-[200] hidden bg-black/95" role="dialog" aria-modal="true" aria-label="{{ product.name }} gallery">
+  <button type="button" id="lightbox-close" aria-label="Close (Esc)" class="absolute top-5 right-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20">
+    {% include "includes/icons/close.html" with class="h-5 w-5" %}
+  </button>
+  <button type="button" id="lightbox-prev" aria-label="Previous photo" class="absolute top-1/2 left-3 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:left-6">
+    {% include "includes/icons/chevron-left.html" with class="h-6 w-6" %}
+  </button>
+  <button type="button" id="lightbox-next" aria-label="Next photo" class="absolute top-1/2 right-3 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:right-6">
+    {% include "includes/icons/chevron-right.html" with class="h-6 w-6" %}
+  </button>
+  <div id="lightbox-stage" class="flex h-full w-full items-center justify-center overflow-hidden p-4 sm:p-12">
+    <img id="lightbox-img" src="" alt="" draggable="false" class="max-h-full max-w-full select-none object-contain transition-transform duration-100">
+  </div>
+  <p id="lightbox-counter" class="pointer-events-none absolute top-6 left-1/2 -translate-x-1/2 text-sm font-semibold tracking-[0.2em] text-white/80"></p>
+  <p class="pointer-events-none absolute bottom-5 left-1/2 hidden -translate-x-1/2 text-[11px] font-semibold tracking-[0.18em] text-white/50 uppercase sm:block">Scroll to zoom · Drag to move · Esc to close</p>
+</div>
 {% endblock %}

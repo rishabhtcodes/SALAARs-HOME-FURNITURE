@@ -54,6 +54,34 @@ class NavCategory(models.Model):
         return self.label
 
 
+class FAQGroup(models.Model):
+    title = models.CharField(max_length=150)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "FAQ Group"
+        verbose_name_plural = "FAQ Groups"
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.title
+
+
+class FAQItem(models.Model):
+    group = models.ForeignKey(FAQGroup, on_delete=models.CASCADE, related_name="items")
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "FAQ Item"
+        verbose_name_plural = "FAQ Items"
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.question
+
+
 class Product(models.Model):
     AVAILABILITY_CHOICES = [
         ("In Stock", "In Stock"),
@@ -99,7 +127,7 @@ class Product(models.Model):
     def formatted_price(self):
         if self.price:
             return f"Rs. {int(self.price):,}"
-        return "Price on Request"
+        return "Price on request"
 
 
 class Cart(models.Model):

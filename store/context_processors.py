@@ -1,19 +1,33 @@
+from django.conf import settings
 from .models import NavCategory, Category, Cart
 
 SITE = {
     "name": "SALAAR's HOME",
     "tagline": "Premium Furniture Showroom",
     "tagline_short": "Premium Furniture",
-    "url": "https://salaars-home.vercel.app",
+    "url": settings.SITE_URL.rstrip("/"),
     "description": "SALAAR's HOME is a premium furniture showroom in Karachi, Pakistan offering handcrafted bedroom sets, beds, wardrobes, side tables and dressers in solid wood. Luxury wooden furniture delivered nationwide with professional assembly.",
-    "phone": "0370804453",
-    "phone_display": "037 080 4453",
-    "phone_intl": "92370804453",
-    "address": "Furniture Showroom",
-    "hours": "Every day · 8:00 AM – 9:00 PM",
-    "facebook": "https://www.facebook.com/profile.php?id=61590742701515",
-    "tiktok": "https://www.tiktok.com/@salaars_farnichar",
-    "whatsapp_message": "Hello SALAAR's HOME, I would like to inquire about your furniture collection.",
+    "keywords": [
+        "Furniture Karachi",
+        "Bedroom Sets Karachi",
+        "Beds Karachi",
+        "Wardrobes Karachi",
+        "Side Tables Karachi",
+        "Dressers Karachi",
+        "Wooden Furniture Karachi",
+        "Luxury Furniture Karachi",
+        "Premium Furniture Pakistan",
+        "SALAAR's HOME",
+    ],
+    "phone_display": settings.SITE_PHONE_DISPLAY,
+    "phone_intl": settings.SITE_PHONE_INTL,
+    "address": settings.SITE_ADDRESS,
+    "hours": settings.SITE_HOURS,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=Furniture+Showroom",
+    "map_embed": "https://www.google.com/maps?q=Furniture+Showroom&output=embed",
+    "facebook": settings.SITE_FACEBOOK,
+    "tiktok": settings.SITE_TIKTOK,
+    "whatsapp_message": "Hello SALAAR's HOME! I'm interested in your furniture.",
 }
 
 
@@ -39,4 +53,5 @@ def site_context(request):
         "CATEGORIES": categories,
         "cart_count": cart_count,
         "current_path": request.path,
+        "canonical_path": request.path.rstrip("/"),
     }
