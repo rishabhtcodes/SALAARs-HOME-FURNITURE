@@ -80,7 +80,7 @@
   {% include "includes/footer.html" %}
 
   <!-- Floating WhatsApp Action -->
-  <a href="https://wa.me/{{ SITE.phone_intl }}?text={{ SITE.whatsapp_message|urlencode }}"
+  <a href="https://wa.me/{{ SITE.whatsapp_number }}?text={{ SITE.whatsapp_message|urlencode }}"
      target="_blank" rel="noopener noreferrer"
      aria-label="Chat with us on WhatsApp"
      class="group fixed right-5 bottom-5 z-[60] flex items-center gap-3 sm:right-7 sm:bottom-7">

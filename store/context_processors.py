@@ -21,6 +21,7 @@ SITE = {
     ],
     "phone_display": settings.SITE_PHONE_DISPLAY,
     "phone_intl": settings.SITE_PHONE_INTL,
+    "whatsapp_number": getattr(settings, "SITE_WHATSAPP_NUMBER", "917986307281"),
     "address": settings.SITE_ADDRESS,
     "hours": settings.SITE_HOURS,
     "maps_url": "https://www.google.com/maps/search/?api=1&query=Furniture+Showroom",
