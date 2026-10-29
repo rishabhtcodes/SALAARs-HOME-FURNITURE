@@ -59,8 +59,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# Database configuration
+# On Vercel serverless functions, the root filesystem is read-only.
+# If no external PostgreSQL DATABASE_URL is provided, fall back to /tmp/db.sqlite3
+default_db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+if 'VERCEL' in os.environ and 'DATABASE_URL' not in os.environ:
+    default_db_url = "sqlite:////tmp/db.sqlite3"
+
 DATABASES = {
-    'default': env.db()
+    'default': env.db(default=default_db_url)
 }
 
 AUTH_PASSWORD_VALIDATORS = [
