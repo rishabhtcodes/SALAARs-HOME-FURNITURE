@@ -124,6 +124,8 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default=(f"SALAAR's HOME <{EMAIL_
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Session configuration
+# Use signed cookie session backend on serverless to maintain sessions across ephemeral lambda instances
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_COOKIE_SAMESITE = 'Lax'

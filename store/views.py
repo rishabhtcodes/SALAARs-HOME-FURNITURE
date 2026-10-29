@@ -93,12 +93,15 @@ def search_products(query, limit=None):
     return (matches[:limit] if limit else matches), total
 
 
+import uuid
+
 def get_or_create_cart(request):
     if request.user.is_authenticated:
         cart, _ = Cart.objects.get_or_create(user=request.user)
         # Migrate anonymous cart if present
-        if request.session.session_key:
-            anon_cart = Cart.objects.filter(session_key=request.session.session_key).first()
+        cart_token = request.session.get("cart_token") or request.session.session_key
+        if cart_token:
+            anon_cart = Cart.objects.filter(session_key=cart_token).first()
             if anon_cart and anon_cart != cart:
                 for item in anon_cart.items.all():
                     cart_item, created = CartItem.objects.get_or_create(
@@ -111,10 +114,12 @@ def get_or_create_cart(request):
                 anon_cart.delete()
         return cart
     else:
-        if not request.session.session_key:
-            request.session.save()
+        cart_token = request.session.get("cart_token")
+        if not cart_token:
+            cart_token = uuid.uuid4().hex
+            request.session["cart_token"] = cart_token
         request.session.modified = True
-        cart, _ = Cart.objects.get_or_create(session_key=request.session.session_key)
+        cart, _ = Cart.objects.get_or_create(session_key=cart_token)
         return cart
 
 

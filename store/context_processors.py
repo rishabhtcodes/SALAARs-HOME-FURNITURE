@@ -41,8 +41,10 @@ def site_context(request):
     cart = None
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).first()
-    elif request.session.session_key:
-        cart = Cart.objects.filter(session_key=request.session.session_key).first()
+    else:
+        cart_token = request.session.get("cart_token") or request.session.session_key
+        if cart_token:
+            cart = Cart.objects.filter(session_key=cart_token).first()
 
     if cart:
         cart_count = cart.total_count
