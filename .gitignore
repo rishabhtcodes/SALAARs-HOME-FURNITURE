@@ -31,3 +31,6 @@ desktop.ini
 # Node (Tailwind build tooling)
 node_modules/
 npm-debug.log*
+
+.vercel
+.env*

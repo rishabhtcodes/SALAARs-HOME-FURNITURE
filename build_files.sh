@@ -14,3 +14,4 @@ echo "=== Loading product fixtures ==="
 python manage.py loaddata store/fixtures/products.json || echo "Fixture load skipped (already loaded or error)"
 
 echo "=== Build complete ==="
+
