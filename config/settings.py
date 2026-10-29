@@ -14,7 +14,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'testserver'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'testserver', '.vercel.app', '*'])
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -116,7 +117,7 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default=(f"SALAAR's HOME <{EMAIL_
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Deployment security – enable the HTTPS options in production via environment
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['https://*.vercel.app', 'https://*.now.sh'])
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
