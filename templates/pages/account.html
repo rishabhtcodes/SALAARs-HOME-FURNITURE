@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}My Account | {{ SITE.name }}{% endblock %}
 
@@ -53,7 +54,7 @@
                       <div class="flex justify-between text-xs text-stone">
                         <span>{{ it.quantity }}x {{ it.product_name }}</span>
                         <span class="font-semibold text-ink">
-                          {% if it.price %}Rs. {{ it.price|floatformat:"0" }}{% else %}On Request{% endif %}
+                          {% if it.price %}Rs. {{ it.price|floatformat:"0"|intcomma }}{% else %}On Request{% endif %}
                         </span>
                       </div>
                     {% endfor %}
@@ -62,7 +63,7 @@
                   <div class="mt-4 pt-3 border-t border-line flex justify-between items-baseline text-sm">
                     <span class="font-semibold text-ink">Total</span>
                     <span class="font-bold text-gold-deep">
-                      {% if order.total_amount %}Rs. {{ order.total_amount|floatformat:"0" }}{% else %}Price on Request{% endif %}
+                      {% if order.total_amount %}Rs. {{ order.total_amount|floatformat:"0"|intcomma }}{% else %}Price on Request{% endif %}
                     </span>
                   </div>
                 </div>

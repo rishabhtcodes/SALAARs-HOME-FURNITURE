@@ -11,6 +11,13 @@
   ],
   "routes": [
     {
+      "src": "/static/(?<file>.*)",
+      "dest": "config/wsgi.py",
+      "headers": {
+        "cache-control": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "config/wsgi.py"
     }

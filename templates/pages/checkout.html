@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static humanize %}
 
 {% block title %}Checkout | {{ SITE.name }}{% endblock %}
 
@@ -127,7 +127,7 @@
                 <p class="text-xs text-stone">Qty: {{ item.quantity }}</p>
               </div>
               <span class="text-xs font-bold text-gold-deep">
-                {% if item.subtotal %}Rs. {{ item.subtotal|floatformat:"0" }}{% else %}On Request{% endif %}
+                {% if item.subtotal %}Rs. {{ item.subtotal|floatformat:"0"|intcomma }}{% else %}On Request{% endif %}
               </span>
             </div>
           {% endfor %}
@@ -137,7 +137,7 @@
           <span class="font-display text-base font-semibold text-ink">Total Order Amount</span>
           <span class="font-display text-2xl font-bold text-gold-deep">
             {% if cart.total_price %}
-              Rs. {{ cart.total_price|floatformat:"0" }}
+              Rs. {{ cart.total_price|floatformat:"0"|intcomma }}
             {% else %}
               Quote on Request
             {% endif %}

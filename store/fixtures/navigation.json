@@ -1,0 +1,147 @@
+[
+{
+  "model": "store.navcategory",
+  "pk": 1,
+  "fields": {
+    "label": "Bed Sets",
+    "slug": "bed-sets",
+    "source_category": 1,
+    "tagline": "Complete bedroom collections, perfectly matched",
+    "short": "Full bedroom suites – bed, wardrobe, dresser and side tables designed to work as one harmonious set.",
+    "description": "A bed set from SALAAR's HOME turns an empty room into a complete, elegant retreat. Every set is designed as one cohesive collection – bed, wardrobe, dresser and side tables – so the finish, hardware and style always match perfectly. Choose from classic wood tones or modern minimal designs, all handcrafted from solid wood with premium fittings.",
+    "empty_title": "",
+    "empty_text": "",
+    "seo_title": "Bed Sets – Complete Bedroom Collections",
+    "seo_description": "Explore handcrafted bed sets at SALAAR's HOME – beds, wardrobes, dressers and side tables designed as complete, matching collections.",
+    "order": 0,
+    "is_in_header": true
+  }
+},
+{
+  "model": "store.navcategory",
+  "pk": 2,
+  "fields": {
+    "label": "Beds",
+    "slug": "beds",
+    "source_category": 1,
+    "tagline": "The heart of your bedroom",
+    "short": "Beautiful solid-wood beds – queen, king and custom sizes – built for comfort and made to last.",
+    "description": "A great bed anchors the whole bedroom. Our beds are built from solid wood with reinforced frames and elegant headboards, available in queen, king and custom sizes. Whether you prefer a classic panel design or a modern upholstered silhouette, every bed is finished by hand and delivered with professional assembly.",
+    "empty_title": "",
+    "empty_text": "",
+    "seo_title": "Beds – Solid Wood Beds for Every Bedroom",
+    "seo_description": "Discover quality solid-wood beds at SALAAR's HOME – queen, king and custom sizes, handcrafted and delivered with assembly.",
+    "order": 1,
+    "is_in_header": true
+  }
+},
+{
+  "model": "store.navcategory",
+  "pk": 3,
+  "fields": {
+    "label": "Side Tables",
+    "slug": "side-tables",
+    "source_category": 3,
+    "tagline": "Small pieces, big character",
+    "short": "Elegant bedside and accent tables in solid wood – the finishing touch for any room.",
+    "description": "The right side table finishes a room. Handcrafted from solid wood with clean joins and smooth finishes, our side tables bring warmth and function to the bedside, the sofa corner or the hallway. Available in a range of heights and styles to match any interior – simple, elegant and built to last.",
+    "empty_title": "",
+    "empty_text": "",
+    "seo_title": "Side Tables – Elegant Accent Pieces",
+    "seo_description": "Shop elegant solid wood side tables at SALAAR's HOME – bedside and accent tables in many styles and finishes.",
+    "order": 2,
+    "is_in_header": true
+  }
+},
+{
+  "model": "store.navcategory",
+  "pk": 4,
+  "fields": {
+    "label": "Dressers",
+    "slug": "dressers",
+    "source_category": 4,
+    "tagline": "Where beauty meets everyday function",
+    "short": "Dressers with deep, smooth-gliding drawers – classic storage for your everyday essentials.",
+    "description": "A dresser is more than a place to get ready in the morning – it is a statement piece. Our dressers offer deep, smooth-gliding drawers for all your essentials, topped with a beautiful vanity mirror that completes the look. Classic and contemporary designs available in rich wood tones that grow more beautiful with age.",
+    "empty_title": "",
+    "empty_text": "",
+    "seo_title": "Dressers – Classic Storage With Elegance",
+    "seo_description": "Browse classic wooden dressers at SALAAR's HOME – deep smooth-gliding drawers and hand-finished solid wood.",
+    "order": 3,
+    "is_in_header": true
+  }
+},
+{
+  "model": "store.navcategory",
+  "pk": 5,
+  "fields": {
+    "label": "Mirrors",
+    "slug": "mirrors",
+    "source_category": 4,
+    "tagline": "Reflections that elevate a room",
+    "short": "Elegant standing and vanity mirrors that add light, depth and character to any space.",
+    "description": "The right mirror makes a room feel larger, brighter and more composed. Our mirrors pair premium mirror glass with hand-finished wooden frames – from slim vanity mirrors to full-length standing designs. Each piece is carefully packed and delivered with care.",
+    "empty_title": "",
+    "empty_text": "",
+    "seo_title": "Mirrors – Premium Framed Vanity Mirrors",
+    "seo_description": "Discover premium mirrors at SALAAR's HOME – vanity and standing mirrors with hand-finished wooden frames.",
+    "order": 4,
+    "is_in_header": true
+  }
+},
+{
+  "model": "store.navcategory",
+  "pk": 6,
+  "fields": {
+    "label": "Wardrobes",
+    "slug": "wardrobes",
+    "source_category": 2,
+    "tagline": "Storage that keeps your space beautiful",
+    "short": "Spacious wardrobes with sliding or hinged doors, built-in mirrors and smart internal storage.",
+    "description": "A well-designed wardrobe quietly keeps your home organized and calm. Our wardrobes combine generous storage with clean, beautiful lines – soft-close doors, adjustable shelves, drawers and hanging space for everything you own. From slim two-door designs to full wall-to-wall wardrobes, every piece is built to last a lifetime.",
+    "empty_title": "",
+    "empty_text": "",
+    "seo_title": "Wardrobes – Spacious & Elegant Storage",
+    "seo_description": "Discover quality wardrobes at SALAAR's HOME – sliding and hinged door designs, smart internal storage, made to measure.",
+    "order": 5,
+    "is_in_header": true
+  }
+},
+{
+  "model": "store.navcategory",
+  "pk": 7,
+  "fields": {
+    "label": "TV Units",
+    "slug": "tv-units",
+    "source_category": null,
+    "tagline": "The centerpiece of your living room",
+    "short": "Elegant TV stands and entertainment units with smart cable management and generous storage.",
+    "description": "A beautifully crafted TV unit keeps your living room tidy and stylish. Our entertainment units combine clean lines, soft-close drawers and smart cable management – designed to hold today's screens while complementing your decor. New designs are added regularly.",
+    "empty_title": "This collection is coming soon",
+    "empty_text": "We are crafting a new selection of TV units. Meanwhile, our team can build a custom piece to your exact size and finish – just ask.",
+    "seo_title": "TV Units – Elegant Entertainment Storage",
+    "seo_description": "TV units at SALAAR's HOME – elegant entertainment stands with smart storage, arriving soon. Custom sizes available.",
+    "order": 6,
+    "is_in_header": false
+  }
+},
+{
+  "model": "store.navcategory",
+  "pk": 8,
+  "fields": {
+    "label": "Study Tables",
+    "slug": "study-tables",
+    "source_category": null,
+    "tagline": "A calm corner to think and work",
+    "short": "Solid-wood study desks with clean lines, cable management and room to focus.",
+    "description": "The right desk turns a corner into a workspace. Our study tables pair solid wood surfaces with clean, minimalist legs and practical cable management – made for focus, made to last. New designs are added regularly.",
+    "empty_title": "This collection is coming soon",
+    "empty_text": "We are crafting a new selection of study tables. Meanwhile, our team can build a custom piece to your exact size and finish – just ask.",
+    "seo_title": "Study Tables – Solid Wood Desks",
+    "seo_description": "Study tables at SALAAR's HOME – solid wood desks with clean lines, arriving soon. Custom sizes available.",
+    "order": 7,
+    "is_in_header": false
+  }
+}
+]
+

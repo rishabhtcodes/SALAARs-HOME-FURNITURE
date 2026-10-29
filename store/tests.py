@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.test import TestCase, Client
 from django.urls import reverse
 from store.models import Category, NavCategory, Product, Cart, CartItem, Order, FAQGroup, FAQItem
 import json
 import re
+
+SITE_URL = settings.SITE_URL.rstrip("/")
 
 
 class StoreViewsTestCase(TestCase):
@@ -80,7 +83,7 @@ class StoreViewsTestCase(TestCase):
         self.assertEqual(r_res.status_code, 200)
         self.assertEqual(
             r_res.content.decode("utf-8"),
-            "User-Agent: *\nAllow: /\n\nSitemap: https://salaars-home.vercel.app/sitemap.xml\n",
+            f"User-Agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n",
         )
 
         s_res = self.client.get(reverse("sitemap_xml"))
@@ -219,7 +222,7 @@ class StoreViewsTestCase(TestCase):
         self.assertIn('name="keywords" content="Furniture Delhi,', content)
         self.assertIn('name="robots" content="index, follow"', content)
         self.assertIn('name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"', content)
-        self.assertIn('name="google-site-verification" content="yw2_qlD281fh3LxRaN6GJlQPSGfXhBRLyMVd1R1g6nQ"', content)
+        self.assertNotIn('name="google-site-verification"', content)
 
     def test_product_metadata_matches_reference(self):
         response = self.client.get(reverse("product_detail", args=[self.product.slug]))
@@ -229,13 +232,13 @@ class StoreViewsTestCase(TestCase):
             content,
         )
         self.assertIn('<meta property="og:title" content="Bedroom Sets – Design 1 | SALAAR&#x27;s HOME">', content)
-        self.assertIn(f'<meta property="og:image" content="https://salaars-home.vercel.app/static/{self.product.image[1:]}">', content)
+        self.assertIn(f'<meta property="og:image" content="{SITE_URL}/static/{self.product.image[1:]}">', content)
 
     def test_404_is_noindex_with_home_canonical(self):
         response = self.client.get("/this-page-does-not-exist/")
         content = response.content.decode("utf-8")
         self.assertIn('name="robots" content="noindex, follow"', content)
-        self.assertIn('<link rel="canonical" href="https://salaars-home.vercel.app">', content)
+        self.assertIn(f'<link rel="canonical" href="{SITE_URL}">', content)
 
     def test_sitemap_priorities(self):
         response = self.client.get(reverse("sitemap_xml"))
@@ -244,7 +247,7 @@ class StoreViewsTestCase(TestCase):
         self.assertIn("<lastmod>", content)
         # Reference order: static routes, then nav categories, then categories, then products
         self.assertLess(content.index("/category/bed-sets"), content.index("/bedroom-sets"))
-        self.assertIn("<loc>https://salaars-home.vercel.app/</loc>", content)
+        self.assertIn(f"<loc>{SITE_URL}/</loc>", content)
         self.assertNotIn("-ph-", content)
 
     def test_demo_payment_gateway_flow(self):

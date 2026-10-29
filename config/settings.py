@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import environ
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -60,15 +61,32 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database configuration
-# On Vercel serverless functions, the root filesystem is read-only.
-# If no external PostgreSQL DATABASE_URL is provided, fall back to /tmp/db.sqlite3
+# Production needs a persistent database. Vercel's filesystem is read-only and every
+# function instance gets its own throwaway /tmp, so SQLite there silently loses carts,
+# orders and signups as requests move between instances.
 default_db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
-if 'VERCEL' in os.environ and 'DATABASE_URL' not in os.environ:
-    default_db_url = "sqlite:////tmp/db.sqlite3"
 
 DATABASES = {
     'default': env.db(default=default_db_url)
 }
+
+if DATABASES['default']['ENGINE'].endswith('postgresql'):
+    # Supabase's transaction pooler multiplexes connections, so prepared statements and
+    # server-side cursors must be off and connections must not be held open.
+    DATABASES['default']['CONN_MAX_AGE'] = 0
+    DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+    DATABASES['default'].setdefault('OPTIONS', {})
+    DATABASES['default']['OPTIONS'].update({
+        'prepare_threshold': None,
+        'sslmode': 'require',
+    })
+
+if 'VERCEL' in os.environ and DATABASES['default']['ENGINE'].endswith('sqlite3'):
+    raise ImproperlyConfigured(
+        'DATABASE_URL must point at a managed Postgres on Vercel. SQLite cannot work '
+        'there: each serverless instance gets a private, ephemeral /tmp, so carts and '
+        'orders disappear between requests.'
+    )
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -91,11 +109,15 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
 }
 
+# Vercel's CDN caches these responses, so a moderate max-age keeps swapped product
+# images fresh within a day instead of pinning them for a year.
+WHITENOISE_MAX_AGE = env.int('WHITENOISE_MAX_AGE', default=0)
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Business details (override via environment in production)
-SITE_URL = env('SITE_URL', default='https://salaars-home.vercel.app')
+SITE_URL = env('SITE_URL', default='https://salaars-home-omega.vercel.app')
 SITE_PHONE_DISPLAY = env('SITE_PHONE_DISPLAY', default='+91 98000 00000')
 SITE_PHONE_INTL = env('SITE_PHONE_INTL', default='919800000000')
 SITE_WHATSAPP_NUMBER = env('SITE_WHATSAPP_NUMBER', default='917986307281')
@@ -103,6 +125,8 @@ SITE_ADDRESS = env('SITE_ADDRESS', default='Furniture Showroom, Kirti Nagar, New
 SITE_HOURS = env('SITE_HOURS', default='Every day · 8:00 AM – 9:00 PM')
 SITE_FACEBOOK = env('SITE_FACEBOOK', default='https://www.facebook.com')
 SITE_TIKTOK = env('SITE_TIKTOK', default='https://www.tiktok.com')
+# Paste the owner's own Google Search Console token here; empty omits the meta tag.
+SITE_GOOGLE_VERIFICATION = env('SITE_GOOGLE_VERIFICATION', default='')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

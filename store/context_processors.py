@@ -28,6 +28,7 @@ SITE = {
     "map_embed": "https://www.google.com/maps?q=Furniture+Showroom+Kirti+Nagar+Delhi&output=embed",
     "facebook": settings.SITE_FACEBOOK,
     "tiktok": settings.SITE_TIKTOK,
+    "google_verification": settings.SITE_GOOGLE_VERIFICATION,
     "whatsapp_message": "Hello SALAAR's HOME! I'm interested in your furniture.",
 }
 

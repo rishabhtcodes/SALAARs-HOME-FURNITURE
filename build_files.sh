@@ -10,8 +10,8 @@ python manage.py collectstatic --noinput
 echo "=== Running database migrations ==="
 python manage.py migrate --noinput
 
-echo "=== Loading product fixtures ==="
-python manage.py loaddata store/fixtures/products.json || echo "Fixture load skipped (already loaded or error)"
+echo "=== Loading seed data ==="
+python manage.py loaddata store/fixtures/products.json store/fixtures/faqs.json store/fixtures/navigation.json
 
 echo "=== Build complete ==="
 

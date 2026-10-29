@@ -10,7 +10,7 @@
   <meta name="keywords" content="{{ SITE.keywords|join:', ' }}">
   <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
   <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="google-site-verification" content="yw2_qlD281fh3LxRaN6GJlQPSGfXhBRLyMVd1R1g6nQ">
+  {% if SITE.google_verification %}<meta name="google-site-verification" content="{{ SITE.google_verification }}">{% endif %}
   <link rel="canonical" href="{% block canonical %}{{ SITE.url }}{{ canonical_path }}{% endblock %}">
 
   <!-- Social sharing -->

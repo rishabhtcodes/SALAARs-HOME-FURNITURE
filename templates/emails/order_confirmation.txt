@@ -1,3 +1,4 @@
+{% load humanize %}
 Order Confirmation #{{ order.id }} - {{ site.name|default:"SALAAR's HOME" }}
 
 Dear {{ order.full_name }},
@@ -9,11 +10,11 @@ We have received your furniture order and our Delhi showroom team will contact y
 Order ID: #{{ order.id }}
 Payment Method: {{ order.get_payment_method_display }}
 Payment Status: {% if order.is_paid %}PAID ({{ order.payment_transaction_id }}){% else %}PENDING UPON DISPATCH{% endif %}
-Total Amount: Rs. {{ order.total_amount|floatformat:"0" }}
+Total Amount: Rs. {{ order.total_amount|floatformat:"0"|intcomma }}
 
 --- ITEMS ---
 {% for item in items %}
-* {{ item.product_name }} - Qty: {{ item.quantity }} - Rs. {{ item.price|floatformat:"0" }}
+* {{ item.product_name }} - Qty: {{ item.quantity }} - Rs. {{ item.price|floatformat:"0"|intcomma }}
 {% endfor %}
 
 --- DELIVERY DETAILS ---

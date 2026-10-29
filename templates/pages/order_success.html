@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}Order Placed Successfully | {{ SITE.name }}{% endblock %}
 
@@ -37,7 +38,7 @@
         <div class="flex justify-between border-t border-line/60 pt-2">
           <span class="text-stone">Total Amount:</span>
           <span class="font-bold text-ink text-sm">
-            Rs. {{ order.total_amount|floatformat:"0" }}
+            Rs. {{ order.total_amount|floatformat:"0"|intcomma }}
           </span>
         </div>
       </div>
