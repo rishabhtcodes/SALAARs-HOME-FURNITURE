@@ -113,6 +113,11 @@ STORAGES = {
 # images fresh within a day instead of pinning them for a year.
 WHITENOISE_MAX_AGE = env.int('WHITENOISE_MAX_AGE', default=0)
 
+# Index static from STATICFILES_DIRS and installed apps at startup rather than from
+# STATIC_ROOT, so a deployment never depends on collectstatic output being present.
+WHITENOISE_USE_FINDERS = env.bool('WHITENOISE_USE_FINDERS', default=True)
+WHITENOISE_AUTOREFRESH = False
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

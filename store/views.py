@@ -134,7 +134,7 @@ def home_view(request):
         active_tab = "all"
 
     # Best sellers (limit 8, prioritized best_selling)
-    best_sellers = best_seller_qs.order_by("-best_selling", "order")[:8]
+    best_sellers = best_seller_qs.select_related("category").order_by("-best_selling", "order")[:8]
     
     # Pack featured categories with product count and first product image
     featured_cats = []
@@ -156,7 +156,7 @@ def home_view(request):
 
 
 def shop_view(request):
-    products = Product.objects.all()
+    products = Product.objects.select_related("category")
     query = request.GET.get("q", "").strip()
     category_slug = request.GET.get("category", "all")
     price_range = request.GET.get("price", "any")
@@ -310,15 +310,17 @@ def direct_category_view(request, category):
 
 
 def product_detail_view(request, slug):
-    product = get_object_or_404(Product, slug=slug)
+    product = get_object_or_404(Product.objects.select_related("category"), slug=slug)
 
     related = list(
-        Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+        Product.objects.select_related("category")
+        .filter(category=product.category).exclude(id=product.id)[:4]
     )
     if len(related) < 4:
         ids = [product.id] + [p.id for p in related]
         related += list(
-            Product.objects.exclude(id__in=ids).order_by("order", "id")[: 4 - len(related)]
+            Product.objects.select_related("category")
+            .exclude(id__in=ids).order_by("order", "id")[: 4 - len(related)]
         )
 
     gallery = []
