@@ -88,8 +88,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Business details (override via environment in production)
 SITE_URL = env('SITE_URL', default='https://salaars-home.vercel.app')
-SITE_PHONE_DISPLAY = env('SITE_PHONE_DISPLAY', default='037 080 4453')
-SITE_PHONE_INTL = env('SITE_PHONE_INTL', default='92370804453')
+SITE_PHONE_DISPLAY = env('SITE_PHONE_DISPLAY', default='+91 7986307281')
+SITE_PHONE_INTL = env('SITE_PHONE_INTL', default='917986307281')
 SITE_ADDRESS = env('SITE_ADDRESS', default='Furniture Showroom')
 SITE_HOURS = env('SITE_HOURS', default='Every day · 8:00 AM – 9:00 PM')
 SITE_FACEBOOK = env('SITE_FACEBOOK', default='https://www.facebook.com/profile.php?id=61590742701515')

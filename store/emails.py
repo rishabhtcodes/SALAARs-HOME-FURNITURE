@@ -23,8 +23,8 @@ def send_order_confirmation_email(order):
     site_info = {
         "name": getattr(settings, "SITE_NAME", "SALAAR's HOME"),
         "url": getattr(settings, "SITE_URL", "https://salaars-home.vercel.app").rstrip("/"),
-        "phone_display": getattr(settings, "SITE_PHONE_DISPLAY", "037 080 4453"),
-        "phone_intl": getattr(settings, "SITE_PHONE_INTL", "92370804453"),
+        "phone_display": getattr(settings, "SITE_PHONE_DISPLAY", "+91 7986307281"),
+        "phone_intl": getattr(settings, "SITE_PHONE_INTL", "917986307281"),
         "address": getattr(settings, "SITE_ADDRESS", "Furniture Showroom"),
         "hours": getattr(settings, "SITE_HOURS", "Every day · 8:00 AM – 9:00 PM"),
     }
