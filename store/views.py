@@ -113,6 +113,7 @@ def get_or_create_cart(request):
     else:
         if not request.session.session_key:
             request.session.save()
+        request.session.modified = True
         cart, _ = Cart.objects.get_or_create(session_key=request.session.session_key)
         return cart
 

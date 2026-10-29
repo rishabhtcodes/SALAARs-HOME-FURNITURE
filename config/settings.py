@@ -123,6 +123,12 @@ EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default=(f"SALAAR's HOME <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else "SALAAR's HOME <noreply@salaars-home.com>"))
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
+# Session configuration
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_HTTPONLY = True
+
 # Deployment security – enable the HTTPS options in production via environment
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['https://*.vercel.app', 'https://*.now.sh'])
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
