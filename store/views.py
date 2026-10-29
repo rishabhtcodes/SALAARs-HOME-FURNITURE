@@ -509,7 +509,7 @@ def checkout_view(request):
             cart.items.all().delete()
 
             # If user selected card or mobile wallet, redirect to the interactive demo gateway
-            if order.payment_method in ("card", "jazzcash"):
+            if order.payment_method in ("card", "upi"):
                 return redirect("payment_gateway", order_id=order.id)
 
             # Send customized order confirmation email for cash / bank wire orders

@@ -61,17 +61,17 @@
           </div>
         </div>
 
-        {% if order.payment_method == "jazzcash" %}
+        {% if order.payment_method == "upi" %}
           <!-- Mobile Wallet Form -->
           <form method="post" action="{% url 'payment_gateway' order.id %}" class="space-y-5">
             {% csrf_token %}
             <input type="hidden" name="action" value="pay">
             <div>
-              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">JazzCash / EasyPaisa Mobile Number</label>
+              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">UPI / Paytm / PhonePe Mobile Number</label>
               <input type="tel" value="{{ order.phone }}" class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono" required>
             </div>
             <div>
-              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Account CNIC (Last 6 Digits)</label>
+              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Aadhaar / UPI ID (Last 6 Digits)</label>
               <input type="text" placeholder="123456" maxlength="6" value="584920" class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono" required>
             </div>
             <div class="pt-4 flex flex-col sm:flex-row gap-4">

@@ -182,7 +182,7 @@ class Order(models.Model):
 
     PAYMENT_METHOD_CHOICES = [
         ("card", "Credit / Debit Card (Demo Secure Gateway)"),
-        ("jazzcash", "JazzCash / EasyPaisa (Mobile Wallet)"),
+        ("upi", "UPI / Paytm / PhonePe (Mobile Wallet)"),
         ("bank_transfer", "Direct Showroom Bank Wire"),
         ("cod", "Cash on Delivery / Assembly"),
     ]
