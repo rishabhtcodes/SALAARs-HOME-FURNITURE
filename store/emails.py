@@ -25,7 +25,7 @@ def send_order_confirmation_email(order):
         "url": getattr(settings, "SITE_URL", "https://salaars-home.vercel.app").rstrip("/"),
         "phone_display": getattr(settings, "SITE_PHONE_DISPLAY", "+91 98000 00000"),
         "phone_intl": getattr(settings, "SITE_PHONE_INTL", "919800000000"),
-        "address": getattr(settings, "SITE_ADDRESS", "Furniture Showroom"),
+        "address": getattr(settings, "SITE_ADDRESS", "Furniture Showroom, Kirti Nagar, New Delhi, India"),
         "hours": getattr(settings, "SITE_HOURS", "Every day · 8:00 AM – 9:00 PM"),
     }
 

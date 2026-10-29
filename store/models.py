@@ -192,7 +192,7 @@ class Order(models.Model):
     phone = models.CharField(max_length=50)
     email = models.EmailField(blank=True)
     address = models.TextField()
-    city = models.CharField(max_length=100, default="Karachi")
+    city = models.CharField(max_length=100, default="Delhi")
     notes = models.TextField(blank=True)
     payment_method = models.CharField(max_length=30, choices=PAYMENT_METHOD_CHOICES, default="card")
     is_paid = models.BooleanField(default=False)

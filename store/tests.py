@@ -111,8 +111,8 @@ class StoreViewsTestCase(TestCase):
             "full_name": "Test Customer",
             "phone": "03001234567",
             "email": "customer@example.com",
-            "city": "Karachi",
-            "address": "Street 10, DHA Phase 6",
+            "city": "Delhi",
+            "address": "Street 10, Kirti Nagar",
             "notes": "Handle with care",
         })
         self.assertEqual(checkout_res.status_code, 302)
@@ -216,7 +216,7 @@ class StoreViewsTestCase(TestCase):
     def test_global_metadata(self):
         response = self.client.get(reverse("home"))
         content = response.content.decode("utf-8")
-        self.assertIn('name="keywords" content="Furniture Karachi,', content)
+        self.assertIn('name="keywords" content="Furniture Delhi,', content)
         self.assertIn('name="robots" content="index, follow"', content)
         self.assertIn('name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"', content)
         self.assertIn('name="google-site-verification" content="yw2_qlD281fh3LxRaN6GJlQPSGfXhBRLyMVd1R1g6nQ"', content)
@@ -256,7 +256,7 @@ class StoreViewsTestCase(TestCase):
             "full_name": "Hamza Alvi",
             "phone": "03009876543",
             "email": "hamza@example.com",
-            "city": "Karachi",
+            "city": "Delhi",
             "address": "Bungalow 45, Clifton Block 4",
             "payment_method": "card",
             "notes": "Urgent bedroom setup",

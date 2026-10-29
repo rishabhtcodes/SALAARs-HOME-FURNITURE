@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Contact Us | {{ SITE.name }}{% endblock %}
-{% block description %}Get in touch with {{ SITE.name }} in Karachi – visit the showroom or call us on {{ SITE.phone_display }}. We usually reply within minutes.{% endblock %}
+{% block description %}Get in touch with {{ SITE.name }} in Delhi – visit the showroom or call us on {{ SITE.phone_display }}. We usually reply within minutes.{% endblock %}
 
 {% block extra_head %}
 <script type="application/ld+json">
@@ -11,7 +11,7 @@
   "@type": "ContactPage",
   "name": "Contact {{ SITE.name|escapejs }}",
   "url": "{{ SITE.url|escapejs }}/contact",
-  "description": "Get in touch with {{ SITE.name|escapejs }} in Karachi – visit the showroom or call us. We usually reply within minutes.",
+  "description": "Get in touch with {{ SITE.name|escapejs }} in Delhi – visit the showroom or call us. We usually reply within minutes.",
   "mainEntity": {
     "@type": "FurnitureStore",
     "@id": "{{ SITE.url|escapejs }}/#furniturestore",
@@ -21,10 +21,10 @@
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "{{ SITE.address|escapejs }}",
-      "addressLocality": "Karachi",
-      "addressRegion": "Sindh",
-      "postalCode": "74000",
-      "addressCountry": "PK"
+      "addressLocality": "Delhi",
+      "addressRegion": "Delhi",
+      "postalCode": "110015",
+      "addressCountry": "IN"
     },
     "openingHoursSpecification": [
       {

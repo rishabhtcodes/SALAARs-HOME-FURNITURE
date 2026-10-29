@@ -3,7 +3,7 @@ Order Confirmation #{{ order.id }} - {{ site.name|default:"SALAAR's HOME" }}
 Dear {{ order.full_name }},
 
 Thank you for your order with {{ site.name|default:"SALAAR's HOME" }}.
-We have received your furniture order and our Karachi showroom team will contact you on {{ order.phone }} shortly to confirm delivery timelines.
+We have received your furniture order and our Delhi showroom team will contact you on {{ order.phone }} shortly to confirm delivery timelines.
 
 --- ORDER SUMMARY ---
 Order ID: #{{ order.id }}
@@ -18,7 +18,7 @@ Total Amount: Rs. {{ order.total_amount|floatformat:"0" }}
 
 --- DELIVERY DETAILS ---
 {{ order.address }}
-{{ order.city }}, Pakistan
+{{ order.city }}, India
 Phone: {{ order.phone }}
 
 {% if order.notes %}

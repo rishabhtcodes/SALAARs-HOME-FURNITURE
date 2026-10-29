@@ -70,7 +70,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Karachi'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
@@ -91,7 +91,7 @@ SITE_URL = env('SITE_URL', default='https://salaars-home.vercel.app')
 SITE_PHONE_DISPLAY = env('SITE_PHONE_DISPLAY', default='+91 98000 00000')
 SITE_PHONE_INTL = env('SITE_PHONE_INTL', default='919800000000')
 SITE_WHATSAPP_NUMBER = env('SITE_WHATSAPP_NUMBER', default='917986307281')
-SITE_ADDRESS = env('SITE_ADDRESS', default='Furniture Showroom')
+SITE_ADDRESS = env('SITE_ADDRESS', default='Furniture Showroom, Kirti Nagar, New Delhi, India')
 SITE_HOURS = env('SITE_HOURS', default='Every day · 8:00 AM – 9:00 PM')
 SITE_FACEBOOK = env('SITE_FACEBOOK', default='https://www.facebook.com')
 SITE_TIKTOK = env('SITE_TIKTOK', default='https://www.tiktok.com')

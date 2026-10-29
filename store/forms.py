@@ -31,7 +31,7 @@ class CheckoutForm(forms.ModelForm):
             }),
             "city": forms.TextInput(attrs={
                 "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
-                "placeholder": "Karachi",
+                "placeholder": "Delhi",
                 "required": True,
             }),
             "address": forms.Textarea(attrs={

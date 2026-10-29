@@ -3,7 +3,7 @@
   <!-- Image Frame -->
   <a href="{% url 'product_detail' product.slug %}" class="relative block aspect-[4/3] overflow-hidden bg-beige" aria-label="View details – {{ product.name }}">
     <img src="{% static product.image|slice:'1:' %}"
-         alt="{{ product.name }} – {{ product.category.name }} – SALAAR's HOME Karachi"
+         alt="{{ product.name }} – {{ product.category.name }} – SALAAR's HOME Delhi"
          loading="lazy"
          class="h-full w-full object-contain p-3 transition-transform duration-300 ease-out group-hover:scale-[1.03] sm:p-5"
          onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
