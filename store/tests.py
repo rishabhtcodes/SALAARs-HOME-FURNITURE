@@ -1,9 +1,13 @@
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
-from store.models import Category, NavCategory, Product, Cart, CartItem, Order, FAQGroup, FAQItem
+from PIL import Image
+from store.models import Category, NavCategory, Product, Cart, CartItem, Order, FAQGroup, FAQItem, UserProfile
+import io
 import json
+import os
 import re
 
 SITE_URL = settings.SITE_URL.rstrip("/")
@@ -364,3 +368,103 @@ class AuthViewsTestCase(TestCase):
             "next": reverse("cart"),
         })
         self.assertRedirects(res, reverse("cart"))
+
+
+class OrderAccessControlTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        category = Category.objects.create(
+            slug="bedroom-sets", name="Bedroom Sets", tagline="Complete bedroom collections",
+            short="Full bedroom suites", description="Handcrafted solid wood bedroom sets.",
+            material="Solid Wood", dimensions="180x200 cm",
+            seo_title="Bedroom Sets", seo_description="Handcrafted bedroom sets.",
+        )
+        product = Product.objects.create(
+            item_id="t-1", category=category, name="Teak Bed", slug="teak-bed",
+            price=120000, image="/products/bedroom-sets/1.jpeg", material="Solid Teak",
+            delivery_time="7 days", availability="In Stock", order=1,
+        )
+        self.product = product
+        self.owner = User.objects.create_user("owner", password="password123")
+        self.stranger = User.objects.create_user("stranger", password="password123")
+        self.order = Order.objects.create(
+            user=self.owner, full_name="Owner Private", phone="9800000000",
+            email="owner@example.com", address="Private Lane 7", city="Delhi",
+            total_amount=120000, payment_method="card",
+        )
+
+    def test_stranger_cannot_open_order_success(self):
+        self.assertEqual(self.client.get(reverse("order_success", args=[self.order.id])).status_code, 404)
+        self.client.login(username="stranger", password="password123")
+        self.assertEqual(self.client.get(reverse("order_success", args=[self.order.id])).status_code, 404)
+
+    def test_stranger_cannot_mark_foreign_order_paid(self):
+        res = self.client.post(reverse("payment_gateway", args=[self.order.id]), {"action": "pay"})
+        self.assertEqual(res.status_code, 404)
+        self.order.refresh_from_db()
+        self.assertFalse(self.order.is_paid)
+
+    def test_owner_can_open_order_pages(self):
+        self.client.login(username="owner", password="password123")
+        self.assertEqual(self.client.get(reverse("order_success", args=[self.order.id])).status_code, 200)
+        self.assertEqual(self.client.get(reverse("payment_gateway", args=[self.order.id])).status_code, 200)
+
+    def test_checkout_session_may_view_the_order_it_just_placed(self):
+        guest = Client()
+        guest.login(username="owner", password="password123")
+        guest.post(reverse("add_to_cart", args=[self.product.id]), {"quantity": 1})
+        res = guest.post(reverse("checkout"), {
+            "full_name": "Owner Private", "phone": "9800000000", "email": "owner@example.com",
+            "city": "Delhi", "address": "Private Lane 7", "payment_method": "cod",
+        })
+        order = Order.objects.latest("id")
+        self.assertRedirects(res, reverse("order_success", args=[order.id]))
+        # A second browser that never placed the order is refused.
+        other = Client()
+        self.assertEqual(other.get(reverse("order_success", args=[order.id])).status_code, 404)
+
+
+class AvatarUploadTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user("pic", password="password123")
+        self.client.login(username="pic", password="password123")
+
+    def _png_upload(self, size=900, name="pic.png"):
+        # Noise keeps the PNG genuinely large, the way a phone photo would be.
+        image = Image.frombytes("RGB", (size, size), os.urandom(size * size * 3))
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        return SimpleUploadedFile(name, buffer.getvalue(), content_type="image/png")
+
+    def test_non_image_is_rejected(self):
+        res = self.client.post(reverse("update_avatar"), {
+            "avatar": SimpleUploadedFile("x.html", b"<svg onload=alert(1)>", content_type="image/svg+xml")
+        })
+        self.assertRedirects(res, reverse("account"))
+        self.assertEqual(UserProfile.objects.get(user=self.user).avatar_base64, "")
+
+    def test_large_upload_is_stored_downsized(self):
+        big = self._png_upload()
+        self.assertGreater(len(big.read()), 500000)
+        big.seek(0)
+        self.client.post(reverse("update_avatar"), {"avatar": big})
+        stored = UserProfile.objects.get(user=self.user).avatar_base64
+        self.assertTrue(stored.startswith("data:image/jpeg;base64,"))
+        self.assertLess(len(stored), 60000)
+
+    def test_avatar_does_not_bloat_every_page(self):
+        self.client.post(reverse("update_avatar"), {"avatar": self._png_upload()})
+        home = self.client.get(reverse("home"))
+        self.assertLess(len(home.content), 200000)
+
+
+class IntroRoutingTestCase(TestCase):
+    def test_welcome_alias_permanently_redirects_to_intro(self):
+        res = self.client.get(reverse("welcome"))
+        self.assertEqual(res.status_code, 301)
+        self.assertEqual(res["Location"], reverse("intro"))
+
+    def test_intro_is_in_sitemap(self):
+        res = self.client.get(reverse("sitemap_xml"))
+        self.assertIn(f"<loc>{SITE_URL}/intro</loc>", res.content.decode("utf-8"))

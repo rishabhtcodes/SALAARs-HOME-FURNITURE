@@ -139,14 +139,24 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/account/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Email Configuration (SMTP / Gmail / Console fallback)
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='marketinghome672@gmail.com')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='sjhwipbjkmbjimsz')
-EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+# Email Configuration – credentials come from the environment only.
+# Without an SMTP password configured we fall back to the console backend so a
+# missing secret can never silently mail customers from a placeholder account.
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = env.int('EMAIL_PORT', default=587)
 EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default="SALAAR's HOME <marketinghome672@gmail.com>")
+EMAIL_TIMEOUT = env.int('EMAIL_TIMEOUT', default=8)
+EMAIL_BACKEND = env(
+    'EMAIL_BACKEND',
+    default=(
+        'django.core.mail.backends.smtp.EmailBackend'
+        if EMAIL_HOST_PASSWORD
+        else 'django.core.mail.backends.console.EmailBackend'
+    ),
+)
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default="SALAAR's HOME <no-reply@salaars.invalid>")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Session configuration

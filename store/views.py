@@ -24,7 +24,15 @@ from .models import (
 from .forms import CheckoutForm, RegisterForm
 from .emails import send_order_confirmation_email, send_welcome_signup_email
 from django.urls import reverse
+import base64
+import io
 import re
+
+from PIL import Image
+
+AVATAR_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+AVATAR_MAX_UPLOAD_BYTES = 3 * 1024 * 1024
+AVATAR_MAX_EDGE = 256
 
 
 _PRICE_TOKEN_RE = re.compile(r"^(\d+(?:\.\d+)?)\s*(tr|trieu|triệu|m|milion|million|k|nghin)?$")
@@ -508,6 +516,19 @@ def remove_from_cart_view(request, item_id):
     return redirect("cart")
 
 
+def _remember_order(request, order):
+    """Mark this browser as a party to the order it just placed."""
+    seen = request.session.get("order_ids", [])
+    if order.id not in seen:
+        request.session["order_ids"] = (seen + [order.id])[-20:]
+
+
+def _can_view_order(request, order):
+    if request.user.is_authenticated and (order.user_id == request.user.id or request.user.is_staff):
+        return True
+    return order.id in (request.session.get("order_ids") or [])
+
+
 def checkout_view(request):
     # Require authentication before placing orders
     if not request.user.is_authenticated:
@@ -539,6 +560,7 @@ def checkout_view(request):
 
             # Clear cart
             cart.items.all().delete()
+            _remember_order(request, order)
 
             # If user selected card or mobile wallet, redirect to the interactive demo gateway
             if order.payment_method in ("card", "upi"):
@@ -566,12 +588,16 @@ def checkout_view(request):
 
 def order_success_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
+    if not _can_view_order(request, order):
+        raise Http404
     return render(request, "pages/order_success.html", {"order": order})
 
 
 def payment_gateway_view(request, order_id):
     import uuid
     order = get_object_or_404(Order, id=order_id)
+    if not _can_view_order(request, order):
+        raise Http404
 
     if request.method == "POST":
         action = request.POST.get("action", "pay")
@@ -668,27 +694,44 @@ def account_view(request):
 @login_required
 @require_POST
 def update_profile_avatar_view(request):
-    """Uploads or updates user profile photo, saving as base64 for persistent serverless display."""
-    import base64
+    """Upload or update the profile photo, stored as a small inline data URI."""
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
-    
+
     avatar_file = request.FILES.get("avatar")
-    if avatar_file:
-        # Validate file size (max 3MB)
-        if avatar_file.size > 3 * 1024 * 1024:
-            messages.error(request, "Image size exceeds 3MB limit. Please choose a smaller picture.")
-            return redirect("account")
-            
-        # Read and encode to base64 data URI
-        content = avatar_file.read()
-        mime_type = avatar_file.content_type or "image/jpeg"
-        encoded = base64.b64encode(content).decode("utf-8")
-        profile.avatar_base64 = f"data:{mime_type};base64,{encoded}"
-        profile.save()
-        messages.success(request, "Profile photo updated successfully!")
-    else:
+    if not avatar_file:
         messages.warning(request, "No image file was selected.")
-        
+        return redirect("account")
+
+    if avatar_file.content_type not in AVATAR_CONTENT_TYPES:
+        messages.error(request, "Please choose a JPG, PNG, WEBP or GIF image.")
+        return redirect("account")
+
+    if avatar_file.size > AVATAR_MAX_UPLOAD_BYTES:
+        messages.error(request, "Image size exceeds 3MB limit. Please choose a smaller picture.")
+        return redirect("account")
+
+    try:
+        image = Image.open(io.BytesIO(avatar_file.read()))
+        image.load()
+        if image.mode in ("RGBA", "LA", "P"):
+            alpha = image.convert("RGBA")
+            canvas = Image.new("RGB", alpha.size, (245, 240, 231))
+            canvas.paste(alpha, mask=alpha.split()[-1])
+            image = canvas
+        elif image.mode != "RGB":
+            image = image.convert("RGB")
+        image.thumbnail((AVATAR_MAX_EDGE, AVATAR_MAX_EDGE))
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG", quality=82, optimize=True)
+    except Exception:
+        messages.error(request, "That file could not be read as an image.")
+        return redirect("account")
+
+    encoded = base64.b64encode(buffer.getvalue()).decode("ascii")
+    profile.avatar_base64 = f"data:image/jpeg;base64,{encoded}"
+    profile.avatar = None
+    profile.save(update_fields=["avatar_base64", "avatar", "updated_at"])
+    messages.success(request, "Profile photo updated successfully!")
     return redirect("account")
 
 
@@ -726,6 +769,7 @@ def sitemap_xml_view(request):
     routes = [
         ("/", "weekly", "1"),
         ("/shop", "weekly", "0.9"),
+        ("/intro", "monthly", "0.8"),
         ("/contact", "monthly", "0.7"),
         ("/faq", "monthly", "0.6"),
         ("/about", "monthly", "0.5"),

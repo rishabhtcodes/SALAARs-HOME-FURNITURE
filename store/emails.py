@@ -39,7 +39,7 @@ def send_welcome_signup_email(user):
     html_content = render_to_string("emails/welcome_signup.html", context)
     text_content = render_to_string("emails/welcome_signup.txt", context)
 
-    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "SALAAR's HOME <marketinghome672@gmail.com>")
+    from_email = settings.DEFAULT_FROM_EMAIL
 
     try:
         msg = EmailMultiAlternatives(
@@ -89,7 +89,7 @@ def send_order_confirmation_email(order):
     html_content = render_to_string("emails/order_confirmation.html", context)
     text_content = render_to_string("emails/order_confirmation.txt", context)
 
-    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "SALAAR's HOME <noreply@salaars-home.com>")
+    from_email = settings.DEFAULT_FROM_EMAIL
 
     try:
         msg = EmailMultiAlternatives(
