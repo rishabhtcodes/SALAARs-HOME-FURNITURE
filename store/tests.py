@@ -100,6 +100,10 @@ class StoreViewsTestCase(TestCase):
         self.assertEqual(data["results"][0]["name"], "Bedroom Sets – Design 1")
 
     def test_cart_and_checkout_flow(self):
+        # Create user and log in to checkout
+        user = User.objects.create_user(username="checkoutuser", email="customer@example.com", password="password123")
+        self.client.login(username="checkoutuser", password="password123")
+
         # 1. Add to cart
         add_res = self.client.post(reverse("add_to_cart", args=[self.product.id]), {"quantity": 2})
         self.assertEqual(add_res.status_code, 302)
@@ -125,6 +129,7 @@ class StoreViewsTestCase(TestCase):
         self.assertEqual(order.full_name, "Test Customer")
         self.assertEqual(order.total_amount, 240000)
         self.assertEqual(order.items.count(), 1)
+        self.assertEqual(order.user, user)
 
     def test_add_to_cart_requires_post(self):
         response = self.client.get(reverse("add_to_cart", args=[self.product.id]))
@@ -252,6 +257,10 @@ class StoreViewsTestCase(TestCase):
         self.assertNotIn("-ph-", content)
 
     def test_demo_payment_gateway_flow(self):
+        # Create user and log in to checkout
+        User.objects.create_user(username="payuser", email="hamza@example.com", password="password123")
+        self.client.login(username="payuser", password="password123")
+
         # 1. Add product to cart
         self.client.post(reverse("add_to_cart", args=[self.product.id]), {"quantity": 1})
 
@@ -310,6 +319,18 @@ class AuthViewsTestCase(TestCase):
         self.assertRedirects(res, reverse("account"))
         user = User.objects.get(username="new-client")
         self.assertTrue(user.check_password("s3cret-pass-123"))
+
+    def test_intro_page_accessible_and_links_to_auth(self):
+        res = self.client.get(reverse("intro"))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Welcome to SALAAR&#x27;s HOME")
+        self.assertContains(res, reverse("register"))
+        self.assertContains(res, reverse("login"))
+
+    def test_unauthenticated_checkout_redirects_to_login(self):
+        # Attempt GET /checkout/ without authentication
+        res = self.client.get(reverse("checkout"))
+        self.assertRedirects(res, f"{reverse('login')}?next={reverse('checkout')}")
 
     def test_login_rejects_offsite_next_and_honours_local_next(self):
         User.objects.create_user("client", password="s3cret-pass-123")
