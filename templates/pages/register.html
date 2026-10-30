@@ -9,6 +9,7 @@
 
 <form method="post" class="mt-8 space-y-5">
   {% csrf_token %}
+  {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
 
   {% if form.non_field_errors %}
     <div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs leading-relaxed text-red-700">
@@ -55,6 +56,6 @@
 </form>
 
 <p class="mt-7 text-center text-xs text-stone">
-  Already registered? <a href="{% url 'login' %}" class="font-semibold text-gold-deep hover:underline">Sign in instead</a>
+  Already registered? <a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="font-semibold text-gold-deep hover:underline">Sign in instead</a>
 </p>
 {% endblock %}

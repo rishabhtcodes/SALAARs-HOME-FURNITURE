@@ -1,0 +1,30 @@
+Welcome to {{ site.name|default:"SALAAR's HOME" }}
+
+Dear {{ full_name|default:user.username }},
+
+Thank you for creating an account with {{ site.name|default:"SALAAR's HOME Furniture" }}.
+We are delighted to welcome you to our community of solid-wood craftsmanship and bespoke living.
+
+Your account details:
+- Username: {{ user.username }}
+- Registered Email: {{ user.email }}
+
+With your account, you can:
+- Explore handcrafted bedroom sets, dressers, wardrobes, and living furniture.
+- Enjoy doorstep delivery across India and white-glove assembly in Delhi NCR.
+- Place orders securely and track progress from our showroom to your home.
+- Request custom wood finishes, dimensional alterations, and personal showroom consultations.
+
+Visit the showroom online:
+{{ site.url }}/shop/
+
+Delhi Showroom Address:
+{{ site.address }}
+Hours: {{ site.hours }}
+Phone: {{ site.phone_display }}
+
+If you need any guidance or wish to arrange a private consultation, simply reach out to our team at any time.
+
+Warm regards,
+{{ site.name|default:"SALAAR's HOME FURNITURE" }}
+{{ site.url }}

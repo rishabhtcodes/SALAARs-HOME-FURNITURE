@@ -92,9 +92,18 @@
             </div>
 
             <div class="mt-8 space-y-3">
-              <a href="{% url 'checkout' %}" class="btn-gold w-full text-center">
-                Proceed to Checkout
-              </a>
+              {% if user.is_authenticated %}
+                <a href="{% url 'checkout' %}" class="btn-gold w-full text-center">
+                  Proceed to Checkout
+                </a>
+              {% else %}
+                <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn-gold w-full text-center">
+                  Sign In / Register to Checkout
+                </a>
+                <p class="text-center text-xs text-stone">
+                  An account is required to place and track your orders.
+                </p>
+              {% endif %}
               <a href="{% url 'shop' %}" class="btn-outline-dark w-full text-center">
                 Continue Shopping
               </a>

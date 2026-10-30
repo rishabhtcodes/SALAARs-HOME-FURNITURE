@@ -21,7 +21,8 @@ from .models import (
     OrderItem,
 )
 from .forms import CheckoutForm, RegisterForm
-from .emails import send_order_confirmation_email
+from .emails import send_order_confirmation_email, send_welcome_signup_email
+from django.urls import reverse
 import re
 
 
@@ -387,6 +388,23 @@ def faq_view(request):
     return render(request, "pages/faq.html", context)
 
 
+def intro_view(request):
+    """
+    Website introduction page showcasing SALAAR's HOME craftsmanship,
+    order workflow, Delhi showroom services, and quick access to sign up or log in.
+    """
+    return render(
+        request,
+        "pages/intro.html",
+        {
+            "breadcrumb_items": [
+                {"label": "Home", "url": "/"},
+                {"label": "Welcome & Introduction"},
+            ]
+        },
+    )
+
+
 def search_api_view(request):
     query = request.GET.get("q", "").strip()
     if len(query) < 1:
@@ -490,6 +508,11 @@ def remove_from_cart_view(request, item_id):
 
 
 def checkout_view(request):
+    # Require authentication before placing orders
+    if not request.user.is_authenticated:
+        messages.info(request, "Please sign in or create an account to proceed with your order.")
+        return redirect(f"{reverse('login')}?next={reverse('checkout')}")
+
     cart = get_or_create_cart(request)
     items = cart.items.select_related("product").all()
     if not items:
@@ -500,8 +523,7 @@ def checkout_view(request):
         form = CheckoutForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
-            if request.user.is_authenticated:
-                order.user = request.user
+            order.user = request.user
             order.total_amount = cart.total_price
             order.save()
 
@@ -605,10 +627,20 @@ def register_view(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data["password"])
             user.save()
+
+            # Send welcome confirmation email to the new registered user
+            send_welcome_signup_email(user)
+
             login(request, user)
             get_or_create_cart(request)
-            messages.success(request, "Your account has been created successfully!")
-            return redirect("account")
+            messages.success(request, f"Welcome to SALAAR's HOME, {user.first_name or user.username}! A welcome email has been sent to {user.email}.")
+            
+            next_url = request.POST.get("next") or request.GET.get("next")
+            if not next_url or not url_has_allowed_host_and_scheme(
+                next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+            ):
+                next_url = "account"
+            return redirect(next_url)
     else:
         form = RegisterForm()
 

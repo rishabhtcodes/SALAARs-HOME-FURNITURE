@@ -72,12 +72,12 @@
       <!-- Form panel -->
       <div class="flex flex-col bg-white px-5 py-8 sm:px-10 sm:py-12 lg:px-12 lg:py-14 xl:px-16">
         <nav class="grid grid-cols-2 border-b border-line" aria-label="Account access">
-          <a href="{% url 'login' %}"
+          <a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}"
              {% if request.resolver_match.url_name == 'login' %}aria-current="page"{% endif %}
              class="flex items-center justify-center gap-2 border-b-2 pb-3.5 text-[11px] font-semibold tracking-[0.2em] uppercase transition-colors duration-200 {% if request.resolver_match.url_name == 'login' %}border-gold text-ink{% else %}border-transparent text-stone hover:text-ink{% endif %}">
             Sign In
           </a>
-          <a href="{% url 'register' %}"
+          <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}"
              {% if request.resolver_match.url_name == 'register' %}aria-current="page"{% endif %}
              class="flex items-center justify-center gap-2 border-b-2 pb-3.5 text-[11px] font-semibold tracking-[0.2em] uppercase transition-colors duration-200 {% if request.resolver_match.url_name == 'register' %}border-gold text-ink{% else %}border-transparent text-stone hover:text-ink{% endif %}">
             Create Account

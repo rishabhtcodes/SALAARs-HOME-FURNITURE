@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to {{ site.name|default:"SALAAR's HOME" }}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f7f4ee;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1f1b16;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      width: 100%;
+      table-layout: fixed;
+      background-color: #f7f4ee;
+      padding: 30px 15px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #e7ded2;
+      box-shadow: 0 4px 20px rgba(31, 27, 22, 0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #1f1b16 0%, #2e2820 100%);
+      padding: 38px 30px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .brand-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #c9a227;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .brand-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 0.03em;
+    }
+    .brand-subtitle {
+      font-size: 12px;
+      color: #c9a227;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .body-content {
+      padding: 34px 30px;
+    }
+    .salutation {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1f1b16;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+    .intro-p {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #5c5449;
+      margin-bottom: 22px;
+    }
+    .highlight-card {
+      background-color: #faf7f2;
+      border: 1px solid #e7ded2;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .highlight-card h4 {
+      margin: 0 0 10px 0;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #9f7b19;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e7ded2;
+    }
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    .detail-label {
+      color: #7a7062;
+    }
+    .detail-val {
+      font-weight: 600;
+      color: #1f1b16;
+    }
+    .feature-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .feature-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0eae1;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #4a4237;
+    }
+    .feature-item:last-child {
+      border-bottom: none;
+    }
+    .feature-icon {
+      color: #c9a227;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .cta-container {
+      text-align: center;
+      margin: 30px 0 10px 0;
+    }
+    .cta-btn {
+      display: inline-block;
+      background-color: #c9a227;
+      color: #1f1b16;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 14px 34px;
+      border-radius: 9999px;
+    }
+    .footer {
+      background-color: #faf7f2;
+      padding: 24px 30px;
+      text-align: center;
+      border-top: 1px solid #e7ded2;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #7a7062;
+    }
+    .footer a {
+      color: #9f7b19;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="brand-eyebrow">&#9670; Private Client Access &#9670;</div>
+        <h1 class="brand-title">{{ site.name|default:"SALAAR's HOME" }}</h1>
+        <div class="brand-subtitle">Delhi Premium Solid Wood Furniture</div>
+      </div>
+
+      <!-- Body Content -->
+      <div class="body-content">
+        <h2 class="salutation">Welcome, {{ first_name|default:user.username }}</h2>
+        <p class="intro-p">
+          Thank you for creating your account with <strong>{{ site.name|default:"SALAAR's HOME" }}</strong>.
+          We are honoured to accompany you as you design, furnish, and elevate your home with handcrafted solid-wood pieces built to last for generations.
+        </p>
+
+        <!-- Account overview -->
+        <div class="highlight-card">
+          <h4>Your Client Account</h4>
+          <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+            <tr>
+              <td style="padding: 6px 0; color: #7a7062;">Username:</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1f1b16;">{{ user.username }}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #7a7062;">Email:</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1f1b16;">{{ user.email }}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #7a7062;">Privileges:</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #9f7b19;">Direct Showroom Orders &amp; Tracking</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Benefits -->
+        <h3 style="font-size: 15px; font-weight: 700; margin: 24px 0 12px 0; color: #1f1b16;">What You Can Do Next:</h3>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-icon">&#10003;</span>
+            <strong>Seamless Online Ordering:</strong> Save your delivery address, add items to your cart, and place orders with real-time status updates.
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">&#10003;</span>
+            <strong>Showroom Assembly Included:</strong> Every furniture piece is transported with care and assembled by our technicians in Delhi NCR.
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">&#10003;</span>
+            <strong>Bespoke Customization:</strong> Need specific dimensions or polish finishes? Our Delhi workshop crafts made-to-order bedroom sets and wardrobes.
+          </li>
+        </ul>
+
+        <!-- CTA -->
+        <div class="cta-container">
+          <a href="{{ site.url }}/shop/" class="cta-btn">Explore Showroom Collections</a>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p style="margin: 0 0 6px 0;"><strong>{{ site.name|default:"SALAAR's HOME FURNITURE" }}</strong></p>
+        <p style="margin: 0 0 6px 0;">{{ site.address }}</p>
+        <p style="margin: 0 0 6px 0;">Showroom Hours: {{ site.hours }} &bull; Helpline: {{ site.phone_display }}</p>
+        <p style="margin: 12px 0 0 0;">
+          <a href="{{ site.url }}">Visit Website</a> &bull;
+          <a href="{{ site.url }}/contact/">Contact Showroom</a> &bull;
+          <a href="{{ site.url }}/account/">My Account</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
