@@ -94,15 +94,40 @@
   </style>
 
   <script>
-    // Immediate script in head to prevent dark mode flash
+    // Immediate script in head to prevent dark mode flash & define global handler
+    function syncThemeIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const sun = document.getElementById('theme-icon-sun');
+      const moon = document.getElementById('theme-icon-moon');
+      if (sun && moon) {
+        if (isDark) {
+          sun.classList.remove('hidden');
+          moon.classList.add('hidden');
+        } else {
+          sun.classList.add('hidden');
+          moon.classList.remove('hidden');
+        }
+      }
+    }
+
+    function toggleThemeMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      syncThemeIcons();
+    }
+
     (function() {
       const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark');
-      } else {
+      } else if (savedTheme === 'light') {
         document.documentElement.classList.remove('dark');
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
       }
     })();
+
+    document.addEventListener('DOMContentLoaded', syncThemeIcons);
   </script>
 
   {% block extra_head %}{% endblock %}
