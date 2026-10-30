@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% block auth_title %}Account | {{ SITE.name }}{% endblock %}{% endblock %}
+
+{% block content %}
+<section class="bg-cream py-10 sm:py-14 lg:py-20">
+  <div class="mx-auto max-w-[1180px] px-4 sm:px-6 lg:px-8">
+    <div class="grid overflow-hidden rounded-[26px] border border-line bg-white shadow-soft sm:rounded-[30px] lg:grid-cols-[1.04fr_0.96fr]">
+
+      <!-- Introduction panel -->
+      <aside class="relative isolate flex min-h-[300px] flex-col justify-between overflow-hidden bg-ink px-6 py-7 sm:min-h-[360px] sm:px-9 sm:py-9 lg:min-h-[740px] lg:p-12 xl:p-14">
+        <img src="{% static 'banners/2.webp' %}" alt="" class="absolute inset-0 -z-20 h-full w-full object-cover">
+        <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/80 to-ink/30" aria-hidden="true"></div>
+        <span aria-hidden="true" class="pointer-events-none absolute -right-6 -bottom-20 hidden font-display text-[19rem] leading-none text-white/[0.05] select-none lg:block">S</span>
+
+        <div class="flex items-center gap-3">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-white/5 font-display text-lg font-bold text-gold backdrop-blur-sm">S</span>
+          <span class="leading-none">
+            <span class="block font-display text-lg font-bold tracking-[0.04em] text-white">{{ SITE.name }}</span>
+            <span class="mt-1.5 block text-[9px] font-semibold tracking-[0.32em] text-gold uppercase">{{ SITE.tagline_short }}</span>
+          </span>
+        </div>
+
+        <div class="mt-10 max-w-md lg:mt-0">
+          <p class="eyebrow-dark"><span class="h-px w-8 bg-gold/60" aria-hidden="true"></span>Private Client Access</p>
+          <h1 class="font-display text-[1.85rem] leading-[1.15] font-semibold text-white text-balance sm:text-4xl lg:text-[2.6rem]">
+            Furniture chosen once,
+            <span class="block text-gold-gradient">kept for years.</span>
+          </h1>
+          <p class="mt-4 hidden max-w-sm text-sm leading-relaxed text-white/70 sm:block">
+            Handcrafted solid-wood bedroom sets, wardrobes and more — built for homes across India. Create an account to follow every order from our Delhi showroom to your door.
+          </p>
+
+          <ul class="mt-9 hidden space-y-5 lg:block">
+            <li class="flex items-start gap-4">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-gold">
+                {% include "includes/icons/shield.html" with class="h-4 w-4" %}
+              </span>
+              <span>
+                <span class="block text-[13px] font-semibold text-white">Secure checkout</span>
+                <span class="mt-0.5 block text-xs text-white/55">Your details stay private.</span>
+              </span>
+            </li>
+            <li class="flex items-start gap-4">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-gold">
+                {% include "includes/icons/truck.html" with class="h-4 w-4" %}
+              </span>
+              <span>
+                <span class="block text-[13px] font-semibold text-white">Delivery &amp; assembly</span>
+                <span class="mt-0.5 block text-xs text-white/55">Nationwide, handled by our team.</span>
+              </span>
+            </li>
+            <li class="flex items-start gap-4">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-gold">
+                {% include "includes/icons/clock.html" with class="h-4 w-4" %}
+              </span>
+              <span>
+                <span class="block text-[13px] font-semibold text-white">Order history</span>
+                <span class="mt-0.5 block text-xs text-white/55">Every purchase, in one place.</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="{% url 'shop' %}" class="mt-9 hidden items-center gap-2 border-t border-white/15 pt-6 text-[11px] font-semibold tracking-[0.18em] text-white/70 uppercase transition-colors hover:text-gold sm:inline-flex">
+          Explore the showroom
+          {% include "includes/icons/arrow-right.html" with class="h-3.5 w-3.5" %}
+        </a>
+      </aside>
+
+      <!-- Form panel -->
+      <div class="flex flex-col bg-white px-5 py-8 sm:px-10 sm:py-12 lg:px-12 lg:py-14 xl:px-16">
+        <nav class="grid grid-cols-2 border-b border-line" aria-label="Account access">
+          <a href="{% url 'login' %}"
+             {% if request.resolver_match.url_name == 'login' %}aria-current="page"{% endif %}
+             class="flex items-center justify-center gap-2 border-b-2 pb-3.5 text-[11px] font-semibold tracking-[0.2em] uppercase transition-colors duration-200 {% if request.resolver_match.url_name == 'login' %}border-gold text-ink{% else %}border-transparent text-stone hover:text-ink{% endif %}">
+            Sign In
+          </a>
+          <a href="{% url 'register' %}"
+             {% if request.resolver_match.url_name == 'register' %}aria-current="page"{% endif %}
+             class="flex items-center justify-center gap-2 border-b-2 pb-3.5 text-[11px] font-semibold tracking-[0.2em] uppercase transition-colors duration-200 {% if request.resolver_match.url_name == 'register' %}border-gold text-ink{% else %}border-transparent text-stone hover:text-ink{% endif %}">
+            Create Account
+          </a>
+        </nav>
+
+        <div class="flex flex-1 flex-col justify-center pt-8 sm:pt-10">
+          {% block auth_content %}{% endblock %}
+        </div>
+
+        <p class="mt-10 border-t border-line pt-5 text-center text-[11px] text-stone">
+          Need a hand? <a href="{% url 'contact' %}" class="font-semibold text-gold-deep hover:underline">Contact the showroom</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

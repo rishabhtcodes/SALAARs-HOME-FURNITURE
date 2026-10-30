@@ -9,6 +9,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
 from .models import (
     Category,
     NavCategory,
@@ -582,7 +583,11 @@ def login_view(request):
             login(request, user)
             get_or_create_cart(request)  # migrates anonymous cart
             messages.success(request, f"Welcome back, {user.first_name or user.username}!")
-            next_url = request.GET.get("next", "account")
+            next_url = request.POST.get("next") or request.GET.get("next")
+            if not next_url or not url_has_allowed_host_and_scheme(
+                next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+            ):
+                next_url = "account"
             return redirect(next_url)
     else:
         form = AuthenticationForm()

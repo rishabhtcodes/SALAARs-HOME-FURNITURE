@@ -53,6 +53,7 @@ class RegisterForm(forms.ModelForm):
         widget=forms.PasswordInput(attrs={
             "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
             "placeholder": "Create a password",
+            "autocomplete": "new-password",
             "required": True,
         })
     )
@@ -60,6 +61,7 @@ class RegisterForm(forms.ModelForm):
         widget=forms.PasswordInput(attrs={
             "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
             "placeholder": "Confirm password",
+            "autocomplete": "new-password",
             "required": True,
         })
     )
@@ -71,20 +73,24 @@ class RegisterForm(forms.ModelForm):
             "username": forms.TextInput(attrs={
                 "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
                 "placeholder": "Username",
+                "autocomplete": "username",
                 "required": True,
             }),
             "email": forms.EmailInput(attrs={
                 "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
                 "placeholder": "Email address",
+                "autocomplete": "email",
                 "required": True,
             }),
             "first_name": forms.TextInput(attrs={
                 "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
                 "placeholder": "First name",
+                "autocomplete": "given-name",
             }),
             "last_name": forms.TextInput(attrs={
                 "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
                 "placeholder": "Last name",
+                "autocomplete": "family-name",
             }),
         }
 

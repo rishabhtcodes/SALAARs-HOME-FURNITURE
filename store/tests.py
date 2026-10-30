@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
 from store.models import Category, NavCategory, Product, Cart, CartItem, Order, FAQGroup, FAQItem
@@ -281,3 +282,49 @@ class StoreViewsTestCase(TestCase):
         self.assertTrue(order.is_paid)
         self.assertEqual(order.status, "paid")
         self.assertTrue(order.payment_transaction_id.startswith("TXN-SLR-"))
+
+
+class AuthViewsTestCase(TestCase):
+    def test_auth_pages_render_with_intro(self):
+        for route in ["login", "register"]:
+            res = self.client.get(reverse(route))
+            self.assertEqual(res.status_code, 200)
+            self.assertContains(res, "Furniture chosen once,")
+            self.assertContains(res, "Private Client Access")
+            self.assertContains(res, reverse("login"))
+            self.assertContains(res, reverse("register"))
+
+    def test_header_shows_sign_in_for_guest(self):
+        res = self.client.get(reverse("home"))
+        self.assertContains(res, f'href="{reverse("login")}"')
+
+    def test_register_creates_account_and_signs_in(self):
+        res = self.client.post(reverse("register"), {
+            "username": "new-client",
+            "email": "new-client@example.com",
+            "first_name": "New",
+            "last_name": "Client",
+            "password": "s3cret-pass-123",
+            "confirm_password": "s3cret-pass-123",
+        })
+        self.assertRedirects(res, reverse("account"))
+        user = User.objects.get(username="new-client")
+        self.assertTrue(user.check_password("s3cret-pass-123"))
+
+    def test_login_rejects_offsite_next_and_honours_local_next(self):
+        User.objects.create_user("client", password="s3cret-pass-123")
+
+        res = self.client.post(reverse("login"), {
+            "username": "client",
+            "password": "s3cret-pass-123",
+            "next": "https://evil.example/phish",
+        })
+        self.assertRedirects(res, reverse("account"))
+        self.client.logout()
+
+        res = self.client.post(reverse("login"), {
+            "username": "client",
+            "password": "s3cret-pass-123",
+            "next": reverse("cart"),
+        })
+        self.assertRedirects(res, reverse("cart"))
