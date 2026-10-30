@@ -28,3 +28,4 @@ If you need any guidance or wish to arrange a private consultation, simply reach
 Warm regards,
 {{ site.name|default:"SALAAR's HOME FURNITURE" }}
 {{ site.url }}
+

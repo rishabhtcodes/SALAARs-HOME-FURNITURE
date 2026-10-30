@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 {% load static humanize %}
 
-{% block title %}Demo Payment Gateway | Order #{{ order.id }} | {{ SITE.name }}{% endblock %}
+{% block title %}Secure Payment Gateway | Order #{{ order.id }} | {{ SITE.name }}{% endblock %}
 
 {% block content %}
-<section class="bg-cream py-12 sm:py-16 lg:py-20">
+<section class="bg-cream py-10 sm:py-16 lg:py-20">
   <div class="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8">
     <!-- Breadcrumb indicator -->
-    <div class="mb-6 flex items-center justify-center gap-2 text-xs text-stone">
+    <nav class="mb-6 flex items-center justify-center gap-2 text-xs text-stone" aria-label="Checkout Progress">
       <span>1. Cart</span>
       <span class="text-mist">→</span>
       <span>2. Shipping Info</span>
       <span class="text-mist">→</span>
-      <span class="font-bold text-gold-deep">3. Secure Payment Gateway (Demo)</span>
-    </div>
+      <span class="font-bold text-gold-deep">3. Secure Payment</span>
+    </nav>
 
     <!-- Gateway Card -->
     <div class="overflow-hidden rounded-3xl border border-line bg-white shadow-soft">
       <!-- Header Banner -->
-      <div class="bg-gradient-to-r from-ink via-stone/95 to-ink px-6 py-6 text-white sm:px-8 flex flex-wrap items-center justify-between gap-4">
+      <div class="bg-gradient-to-r from-ink via-[#2b2721] to-ink px-6 py-6 text-white sm:px-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <span class="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold tracking-wider uppercase backdrop-blur-sm">
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -26,36 +26,36 @@
           </span>
           <h1 class="mt-2 font-display text-2xl font-bold sm:text-3xl text-white">Complete Secure Payment</h1>
         </div>
-        <div class="text-right">
-          <p class="text-xs text-mist">Amount Payable</p>
+        <div class="text-left sm:text-right">
+          <p class="text-xs text-mist uppercase tracking-wider font-medium">Amount Payable</p>
           <p class="font-display text-2xl font-bold text-gold">Rs. {{ order.total_amount|floatformat:"0"|intcomma }}</p>
         </div>
       </div>
 
       <div class="p-6 sm:p-10 space-y-8">
         <!-- Notice badge -->
-        <div class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
+        <div class="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-xs text-amber-900 flex items-start gap-3">
           <svg class="h-5 w-5 shrink-0 text-amber-600 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-          <div>
-            <strong class="font-semibold">Interactive Demo Mode:</strong> This simulates a real Indian payment gateway (Razorpay / PayU / Cashfree / UPI). No real money will be charged. Click "Authorize & Complete Payment" to simulate a successful 3D-Secure transaction.
+          <div class="leading-relaxed">
+            <strong class="font-semibold text-amber-950">Secure Simulated Gateway:</strong> Your card and wallet credentials are pre-configured in demo test mode. Click <span class="font-semibold text-amber-950">"Authorize &amp; Complete Payment"</span> to process your order with an instant 3D-Secure transaction confirmation.
           </div>
         </div>
 
         <!-- Order Summary Preview -->
-        <div class="rounded-2xl bg-linen/50 p-5 border border-line text-xs space-y-2">
-          <div class="flex justify-between">
-            <span class="text-stone">Order Number:</span>
-            <span class="font-bold text-ink">#{{ order.id }}</span>
+        <div class="rounded-2xl bg-linen/50 p-5 border border-line text-xs space-y-2.5">
+          <div class="flex justify-between items-center border-b border-line/60 pb-2">
+            <span class="text-stone">Order Reference:</span>
+            <span class="font-mono font-bold text-ink text-sm">#{{ order.id }}</span>
           </div>
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span class="text-stone">Customer Name:</span>
-            <span class="font-medium text-ink">{{ order.full_name }}</span>
+            <span class="font-semibold text-ink">{{ order.full_name }}</span>
           </div>
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span class="text-stone">Delivery City:</span>
-            <span class="font-medium text-ink">{{ order.city }} (Showroom Assembly Included)</span>
+            <span class="font-medium text-ink">{{ order.city }} <span class="text-gold-deep">(Showroom Assembly Included)</span></span>
           </div>
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span class="text-stone">Payment Channel:</span>
             <span class="font-bold text-gold-deep">{{ order.get_payment_method_display }}</span>
           </div>
@@ -63,93 +63,127 @@
 
         {% if order.payment_method == "upi" %}
           <!-- Mobile Wallet Form -->
-          <form method="post" action="{% url 'payment_gateway' order.id %}" class="space-y-5">
+          <form method="post" action="{% url 'payment_gateway' order.id %}" class="space-y-6" id="upi-pay-form">
             {% csrf_token %}
             <input type="hidden" name="action" value="pay">
+
+            <!-- Wallet Visual Card -->
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-tr from-[#141d26] via-[#1f2d3d] to-[#0f172a] p-6 text-white shadow-xl max-w-sm mx-auto ring-1 ring-white/10">
+              <div class="flex items-center justify-between">
+                <span class="font-display tracking-widest text-xs uppercase text-gold">UPI / MOBILE WALLET</span>
+                <span class="rounded bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">VERIFIED</span>
+              </div>
+              <div class="mt-6 flex items-center gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gold/20 text-gold font-bold text-lg">
+                  ₹
+                </div>
+                <div>
+                  <p class="text-[10px] uppercase tracking-wider text-mist">UPI Linked Account</p>
+                  <p class="font-mono font-bold text-base text-white tracking-wider">{{ order.phone|default:"9876543210" }}@upi</p>
+                </div>
+              </div>
+              <div class="mt-6 flex justify-between items-end text-xs border-t border-white/10 pt-3">
+                <div>
+                  <p class="text-[9px] uppercase tracking-wider text-mist">Verified Payer</p>
+                  <p class="font-semibold text-white/90 truncate max-w-[170px]">{{ order.full_name|default:"Valued Client" }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[9px] uppercase tracking-wider text-mist">Provider</p>
+                  <p class="font-bold text-gold text-xs">NPCI / BHIM</p>
+                </div>
+              </div>
+            </div>
+
             <div>
-              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">UPI / Paytm / PhonePe Mobile Number</label>
-              <input type="tel" value="{{ order.phone }}" class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono" required>
+              <label for="upi_phone" class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Registered Mobile Number</label>
+              <input id="upi_phone" type="tel" value="{{ order.phone }}" class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono" required>
             </div>
             <div>
-              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Aadhaar / UPI ID (Last 6 Digits)</label>
-              <input type="text" placeholder="123456" maxlength="6" value="584920" class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono" required>
+              <label for="upi_id" class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Virtual Payment Address (VPA / UPI ID)</label>
+              <div class="relative">
+                <input id="upi_id" type="text" value="{{ order.phone|default:'9876543210' }}@paytm" class="w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono" required>
+                <span class="absolute right-4 top-3 text-xs font-bold text-emerald-600">UPI ACTIVE</span>
+              </div>
             </div>
-            <div class="pt-4 flex flex-col sm:flex-row gap-4">
-              <button type="submit" class="btn-gold flex-1 py-4 text-center justify-center text-sm font-bold shadow-md">
+
+            <div class="pt-2">
+              <button type="submit" id="wallet-pay-btn" class="btn-gold w-full py-4 text-center justify-center text-sm font-bold shadow-md hover:scale-[1.01] transition-transform">
                 Authorize Wallet Payment (Rs. {{ order.total_amount|floatformat:"0"|intcomma }})
               </button>
             </div>
           </form>
         {% else %}
           <!-- Credit/Debit Card Form -->
-          <form method="post" action="{% url 'payment_gateway' order.id %}" class="space-y-5" id="demo-card-form">
+          <form method="post" action="{% url 'payment_gateway' order.id %}" class="space-y-6" id="card-pay-form">
             {% csrf_token %}
             <input type="hidden" name="action" value="pay">
 
             <!-- Virtual Card Visual -->
             <div class="relative overflow-hidden rounded-2xl bg-gradient-to-tr from-[#1a1c22] via-[#2a2d36] to-[#121316] p-6 text-white shadow-xl max-w-sm mx-auto ring-1 ring-white/10">
               <div class="flex items-center justify-between">
-                <span class="font-display tracking-widest text-xs uppercase text-gold">SALAAR VIP CARD</span>
-                <span class="text-xs font-semibold text-white/60">Demo Gateway</span>
+                <span class="font-display tracking-widest text-xs uppercase text-gold">SALAAR PRESTIGE CARD</span>
+                <span class="rounded bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white/80">3D SECURE</span>
               </div>
-              <div class="mt-8">
-                <div class="flex items-center gap-2 mb-2">
-                  <div class="h-6 w-9 rounded bg-amber-400/80"></div>
+              <div class="mt-7">
+                <div class="flex items-center gap-2 mb-3">
+                  <!-- EMV Chip Simulation -->
+                  <div class="h-6 w-9 rounded-md bg-gradient-to-r from-amber-300 to-amber-500 border border-amber-200/50 shadow-inner"></div>
+                  <!-- Contactless Icon -->
                   <svg class="h-5 w-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
                 </div>
-                <p class="font-mono text-lg tracking-[0.25em] text-white/90" id="card-num-display">•••• •••• •••• 4242</p>
+                <p class="font-mono text-lg tracking-[0.25em] text-white/95" id="card-num-display">•••• •••• •••• 4242</p>
               </div>
-              <div class="mt-6 flex justify-between items-end text-xs">
+              <div class="mt-6 flex justify-between items-end text-xs border-t border-white/10 pt-3">
                 <div>
                   <p class="text-[9px] uppercase tracking-wider text-mist">Cardholder</p>
-                  <p class="font-semibold text-white/90 uppercase tracking-wide truncate max-w-[170px]">{{ order.full_name|default:"SALAAR VALUED CLIENT" }}</p>
+                  <p class="font-semibold text-white/90 uppercase tracking-wide truncate max-w-[170px]">{{ order.full_name|default:"Valued Client" }}</p>
                 </div>
                 <div class="text-right">
                   <p class="text-[9px] uppercase tracking-wider text-mist">Expires</p>
-                  <p class="font-mono font-semibold text-white/90">12/28</p>
+                  <p class="font-mono font-semibold text-white/90">12 / 28</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Card Number</label>
+              <label for="card_number" class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Card Number</label>
               <div class="relative">
-                <input type="text" value="4242 •••• •••• 4242" readonly class="w-full rounded-xl border border-line bg-linen/50 px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono cursor-not-allowed">
-                <span class="absolute right-4 top-3 text-xs font-bold text-stone">VISA / MASTER</span>
+                <input id="card_number" type="text" value="4242 •••• •••• 4242" readonly class="w-full rounded-xl border border-line bg-linen/50 px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono">
+                <span class="absolute right-4 top-3 text-xs font-bold text-stone">VISA / RuPay / Master</span>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Expiry Date</label>
-                <input type="text" value="12 / 28" readonly class="w-full rounded-xl border border-line bg-linen/50 px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono cursor-not-allowed">
+                <label for="expiry_date" class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Expiry Date</label>
+                <input id="expiry_date" type="text" value="12 / 28" readonly class="w-full rounded-xl border border-line bg-linen/50 px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono">
               </div>
               <div>
-                <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">CVV / CVC</label>
-                <input type="text" value="888" readonly class="w-full rounded-xl border border-line bg-linen/50 px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono cursor-not-allowed">
+                <label for="cvv_code" class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">CVV / Security Code</label>
+                <input id="cvv_code" type="text" value="888" readonly class="w-full rounded-xl border border-line bg-linen/50 px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none font-mono">
               </div>
             </div>
 
-            <div class="pt-4 flex flex-col sm:flex-row gap-4">
-              <button type="submit" id="pay-submit-btn" class="btn-gold flex-1 py-4 text-center justify-center text-sm font-bold shadow-md hover:scale-[1.01] transition-transform">
-                Authorize & Complete Payment (Rs. {{ order.total_amount|floatformat:"0"|intcomma }})
+            <div class="pt-2">
+              <button type="submit" id="card-pay-btn" class="btn-gold w-full py-4 text-center justify-center text-sm font-bold shadow-md hover:scale-[1.01] transition-transform">
+                Authorize &amp; Complete Payment (Rs. {{ order.total_amount|floatformat:"0"|intcomma }})
               </button>
             </div>
           </form>
         {% endif %}
 
         <!-- Secondary options -->
-        <div class="pt-4 border-t border-line flex flex-wrap justify-between items-center text-xs text-stone">
+        <div class="pt-4 border-t border-line flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-stone">
           <form method="post" action="{% url 'payment_gateway' order.id %}">
             {% csrf_token %}
             <input type="hidden" name="action" value="cancel">
-            <button type="submit" class="hover:text-ink underline">
+            <button type="submit" class="hover:text-ink underline transition-colors">
               Pay Later via Showroom Transfer or Cash on Arrival
             </button>
           </form>
           <span class="flex items-center gap-1.5 text-stone/80">
             <svg class="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
-            256-Bit SSL Encrypted Sandbox
+            256-Bit SSL Encrypted Gateway
           </span>
         </div>
       </div>
@@ -157,4 +191,3 @@
   </div>
 </section>
 {% endblock %}
-
