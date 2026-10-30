@@ -9,6 +9,7 @@ import io
 import json
 import os
 import re
+from pathlib import Path
 
 SITE_URL = settings.SITE_URL.rstrip("/")
 
@@ -457,6 +458,22 @@ class AvatarUploadTestCase(TestCase):
         self.client.post(reverse("update_avatar"), {"avatar": self._png_upload()})
         home = self.client.get(reverse("home"))
         self.assertLess(len(home.content), 200000)
+
+
+class ThemeToggleBindingTestCase(TestCase):
+    """The theme button had both an inline onclick and a main.js listener, so one
+    click toggled .dark twice and the theme never changed."""
+
+    def test_theme_toggle_has_exactly_one_binding(self):
+        html = self.client.get(reverse("home")).content.decode("utf-8")
+        self.assertEqual(html.count('id="theme-toggle-btn"'), 1)
+        self.assertNotIn('onclick="toggleThemeMode()"', html)
+        self.assertNotIn("function toggleThemeMode", html)
+
+    def test_main_js_still_owns_the_toggle(self):
+        source = (Path(settings.BASE_DIR) / "static" / "js" / "main.js").read_text(encoding="utf-8")
+        self.assertIn('themeToggleBtn.addEventListener("click"', source)
+        self.assertEqual(source.count('classList.toggle("dark")'), 1)
 
 
 class IntroRoutingTestCase(TestCase):

@@ -59,12 +59,45 @@
     html.dark .bg-white,
     html.dark .bg-cream,
     html.dark .bg-linen,
+    html.dark .bg-beige,
+    html.dark .card,
     html.dark aside#mobile-menu {
       background-color: #1a1c22 !important;
       color: #ede8e0 !important;
     }
+    html.dark .bg-gold-pale {
+      background-color: rgba(201, 169, 106, 0.14) !important;
+    }
+    /* Tailwind's opacity variants are separate class names, so .text-ink alone
+       leaves nav links (text-ink/75, text-ink/70) at light-mode ink on a dark header. */
     html.dark .text-ink {
       color: #f7f4ee !important;
+    }
+    /* Gold-filled surfaces (active tabs, FAQ icon) keep dark ink; the surface
+       stays gold in both themes, so inverting the text would sink it to ~1.6:1. */
+    html.dark .bg-gold.text-ink {
+      color: #1a1a1a !important;
+    }
+    html.dark .text-ink\/75,
+    html.dark .text-ink\/70 {
+      color: rgba(247, 244, 238, 0.82) !important;
+    }
+    html.dark .text-stone\/60,
+    html.dark .text-stone\/80 {
+      color: rgba(200, 193, 182, 0.9) !important;
+    }
+    /* Component classes that hard-code ink or gold need their own overrides. */
+    html.dark .title-lg,
+    html.dark .title-md,
+    html.dark .btn-outline-dark {
+      color: #f7f4ee !important;
+    }
+    html.dark .btn-outline-dark {
+      border-color: rgba(255, 255, 255, 0.24) !important;
+    }
+    html.dark .text-gold-deep,
+    html.dark .eyebrow {
+      color: #d9be8a !important;
     }
     html.dark .text-stone {
       color: #a8a196 !important;
@@ -75,6 +108,7 @@
       border-color: rgba(255, 255, 255, 0.12) !important;
     }
     html.dark .bg-linen\/50,
+    html.dark .bg-linen\/60,
     html.dark .bg-linen\/20,
     html.dark .bg-amber-50\/80,
     html.dark .bg-amber-50\/70 {
@@ -94,28 +128,8 @@
   </style>
 
   <script>
-    // Immediate script in head to prevent dark mode flash & define global handler
-    function syncThemeIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const sun = document.getElementById('theme-icon-sun');
-      const moon = document.getElementById('theme-icon-moon');
-      if (sun && moon) {
-        if (isDark) {
-          sun.classList.remove('hidden');
-          moon.classList.add('hidden');
-        } else {
-          sun.classList.add('hidden');
-          moon.classList.remove('hidden');
-        }
-      }
-    }
-
-    function toggleThemeMode() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      syncThemeIcons();
-    }
-
+    // Runs before paint so a saved dark theme never flashes white.
+    // The toggle itself is wired once, in static/js/main.js.
     (function() {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark') {
@@ -126,8 +140,6 @@
         document.documentElement.classList.add('dark');
       }
     })();
-
-    document.addEventListener('DOMContentLoaded', syncThemeIcons);
   </script>
 
   {% block extra_head %}{% endblock %}
