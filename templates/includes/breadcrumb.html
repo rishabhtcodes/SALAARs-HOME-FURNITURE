@@ -1,9 +1,8 @@
 <nav aria-label="Breadcrumb" class="border-b border-line bg-cream">
   <div class="mx-auto flex w-full max-w-[1400px] flex-wrap items-center gap-2 px-4 py-4 text-xs font-semibold tracking-[0.1em] uppercase sm:px-6 lg:px-8 xl:px-12">
-    <a href="{% url 'home' %}" class="text-mist transition-colors hover:text-gold-deep">Home</a>
     {% for item in items %}
       <span class="flex items-center gap-2">
-        {% include "includes/icons/chevron-right.html" with class="h-3 w-3 text-gold/70" %}
+        {% if not forloop.first %}{% include "includes/icons/chevron-right.html" with class="h-3 w-3 text-gold/70" %}{% endif %}
         {% if item.url %}
           <a href="{{ item.url }}" class="text-mist transition-colors hover:text-gold-deep">{{ item.label }}</a>
         {% else %}

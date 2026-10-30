@@ -22,7 +22,7 @@ class CheckoutForm(forms.ModelForm):
             }),
             "phone": forms.TextInput(attrs={
                 "class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none",
-                "placeholder": "e.g. 0300 1234567",
+                "placeholder": "e.g. 98765 43210",
                 "required": True,
             }),
             "email": forms.EmailInput(attrs={

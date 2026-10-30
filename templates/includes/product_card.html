@@ -5,7 +5,7 @@
     <img src="{% static product.image|slice:'1:' %}"
          alt="{{ product.name }} – {{ product.category.name }} – SALAAR's HOME Delhi"
          loading="lazy"
-         class="h-full w-full object-contain p-3 transition-transform duration-300 ease-out group-hover:scale-[1.03] sm:p-5"
+         class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
          onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
     <span class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true"></span>
   </a>
@@ -16,7 +16,7 @@
       {{ product.category.name }}
     </p>
 
-    <h3 class="mt-1.5 font-display text-[15px] leading-snug font-semibold text-ink sm:mt-2 sm:text-xl">
+    <h3 class="mt-1.5 font-display text-[15px] leading-snug font-semibold text-ink text-balance sm:mt-2 sm:text-xl">
       <a href="{% url 'product_detail' product.slug %}" class="transition-colors duration-200 hover:text-gold-deep">
         {{ product.name }}
       </a>

@@ -55,8 +55,8 @@
   <div class="mx-auto grid w-full max-w-[1400px] gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 xl:px-12">
     <!-- Gallery -->
     <div>
-      <button type="button" id="gallery-main-btn" aria-label="Open fullscreen view" class="group relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden rounded-[24px] bg-beige text-left shadow-soft ring-1 ring-line">
-        <img id="main-product-img" src="{% static product.image|slice:'1:' %}" alt="{{ product.name }} – 1 / {{ gallery|length }}" class="h-full w-full object-contain p-4 transition-transform duration-300 ease-out group-hover:scale-[1.04] sm:p-6" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+      <button type="button" id="gallery-main-btn" aria-label="Open fullscreen view" class="group relative block w-full cursor-zoom-in overflow-hidden rounded-[24px] bg-beige text-left shadow-soft ring-1 ring-line">
+        <img id="main-product-img" src="{% static product.image|slice:'1:' %}" alt="{{ product.name }} – 1 / {{ gallery|length }}" class="block h-auto w-full transition-transform duration-300 ease-out group-hover:scale-[1.04]" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
         <span class="pointer-events-none absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/85 text-ink shadow-card backdrop-blur-sm transition-all duration-300 group-hover:bg-gold group-hover:text-ink sm:top-5 sm:right-5" aria-hidden="true">
           {% include "includes/icons/maximize.html" with class="h-4.5 w-4.5" %}
         </span>
@@ -70,7 +70,7 @@
       <div class="mt-4 grid grid-cols-4 gap-2.5 sm:grid-cols-5 lg:grid-cols-8 lg:gap-3">
         {% for img in thumbnails %}
           <button type="button" aria-label="{{ product.name }} – photo {{ forloop.counter }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" class="gallery-thumb relative aspect-square overflow-hidden rounded-xl bg-beige ring-2 transition-all duration-300 {% if forloop.first %}ring-gold shadow-gold{% else %}ring-transparent opacity-60 hover:opacity-100{% endif %}" data-src="{% static img|slice:'1:' %}" data-index="{{ forloop.counter0 }}">
-            <img src="{% static img|slice:'1:' %}" alt="" loading="lazy" class="h-full w-full object-contain p-1.5" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+            <img src="{% static img|slice:'1:' %}" alt="" loading="lazy" class="h-full w-full object-cover" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
           </button>
         {% endfor %}
       </div>
