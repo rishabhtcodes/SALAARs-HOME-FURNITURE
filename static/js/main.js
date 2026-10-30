@@ -1,4 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Dark / Light Theme Toggle
+  const themeToggleBtn = document.getElementById("theme-toggle-btn");
+  const sunIcon = document.getElementById("theme-icon-sun");
+  const moonIcon = document.getElementById("theme-icon-moon");
+
+  function updateThemeIcons() {
+    const isDark = document.documentElement.classList.contains("dark");
+    if (sunIcon && moonIcon) {
+      if (isDark) {
+        sunIcon.classList.remove("hidden");
+        moonIcon.classList.add("hidden");
+      } else {
+        sunIcon.classList.add("hidden");
+        moonIcon.classList.remove("hidden");
+      }
+    }
+  }
+
+  if (themeToggleBtn) {
+    updateThemeIcons();
+    themeToggleBtn.addEventListener("click", () => {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      updateThemeIcons();
+    });
+  }
+
   // Mobile drawer controls
   const openMenuBtn = document.getElementById("open-menu-btn");
   const closeMenuBtn = document.getElementById("close-menu-btn");

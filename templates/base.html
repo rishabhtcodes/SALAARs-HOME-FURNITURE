@@ -47,7 +47,63 @@
       --font-cormorant: 'Cormorant Garamond', Georgia, serif;
       --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
     }
+    /* Dark Mode Theme */
+    html.dark {
+      color-scheme: dark;
+    }
+    html.dark body {
+      background-color: #121316 !important;
+      color: #ede8e0 !important;
+    }
+    html.dark header,
+    html.dark .bg-white,
+    html.dark .bg-cream,
+    html.dark .bg-linen,
+    html.dark aside#mobile-menu {
+      background-color: #1a1c22 !important;
+      color: #ede8e0 !important;
+    }
+    html.dark .text-ink {
+      color: #f7f4ee !important;
+    }
+    html.dark .text-stone {
+      color: #a8a196 !important;
+    }
+    html.dark .border-line,
+    html.dark .border-line\/70,
+    html.dark .border-line\/60 {
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+    html.dark .bg-linen\/50,
+    html.dark .bg-linen\/20,
+    html.dark .bg-amber-50\/80,
+    html.dark .bg-amber-50\/70 {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    html.dark input,
+    html.dark textarea,
+    html.dark select {
+      background-color: #242730 !important;
+      color: #f7f4ee !important;
+      border-color: rgba(255, 255, 255, 0.18) !important;
+    }
+    html.dark .shadow-soft,
+    html.dark .shadow-card {
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
+    }
   </style>
+
+  <script>
+    // Immediate script in head to prevent dark mode flash
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
 
   {% block extra_head %}{% endblock %}
 </head>
