@@ -332,6 +332,21 @@ class AuthViewsTestCase(TestCase):
         res = self.client.get(reverse("checkout"))
         self.assertRedirects(res, f"{reverse('login')}?next={reverse('checkout')}")
 
+    def test_account_avatar_and_delete_flow(self):
+        user = User.objects.create_user("avatar_user", password="password123")
+        self.client.login(username="avatar_user", password="password123")
+        
+        # Test Account View renders
+        res = self.client.get(reverse("account"))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Delete Account")
+        self.assertContains(res, "Upload Profile Photo")
+
+        # Test Delete Account View
+        del_res = self.client.post(reverse("delete_account"))
+        self.assertRedirects(del_res, reverse("home"))
+        self.assertFalse(User.objects.filter(username="avatar_user").exists())
+
     def test_login_rejects_offsite_next_and_honours_local_next(self):
         User.objects.create_user("client", password="s3cret-pass-123")
 

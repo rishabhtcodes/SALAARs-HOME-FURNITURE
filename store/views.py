@@ -19,6 +19,7 @@ from .models import (
     CartItem,
     Order,
     OrderItem,
+    UserProfile,
 )
 from .forms import CheckoutForm, RegisterForm
 from .emails import send_order_confirmation_email, send_welcome_signup_email
@@ -655,8 +656,52 @@ def logout_view(request):
 
 @login_required
 def account_view(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
     orders = Order.objects.filter(user=request.user).prefetch_related("items").all()
-    return render(request, "pages/account.html", {"orders": orders})
+    context = {
+        "orders": orders,
+        "profile": profile,
+    }
+    return render(request, "pages/account.html", context)
+
+
+@login_required
+@require_POST
+def update_profile_avatar_view(request):
+    """Uploads or updates user profile photo, saving as base64 for persistent serverless display."""
+    import base64
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    
+    avatar_file = request.FILES.get("avatar")
+    if avatar_file:
+        # Validate file size (max 3MB)
+        if avatar_file.size > 3 * 1024 * 1024:
+            messages.error(request, "Image size exceeds 3MB limit. Please choose a smaller picture.")
+            return redirect("account")
+            
+        # Read and encode to base64 data URI
+        content = avatar_file.read()
+        mime_type = avatar_file.content_type or "image/jpeg"
+        encoded = base64.b64encode(content).decode("utf-8")
+        profile.avatar_base64 = f"data:{mime_type};base64,{encoded}"
+        profile.save()
+        messages.success(request, "Profile photo updated successfully!")
+    else:
+        messages.warning(request, "No image file was selected.")
+        
+    return redirect("account")
+
+
+@login_required
+@require_POST
+def delete_account_view(request):
+    """Deletes the user's account after confirming intent via POST."""
+    user = request.user
+    username = user.username
+    logout(request)
+    user.delete()
+    messages.success(request, f"Your account '{username}' has been deleted successfully.")
+    return redirect("home")
 
 
 def not_found_view(request, exception=None):

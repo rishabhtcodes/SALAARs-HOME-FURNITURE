@@ -56,8 +56,12 @@
 
       <!-- Account / Sign In -->
       {% if user.is_authenticated %}
-        <a href="{% url 'account' %}" class="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-gold hover:text-gold-deep sm:flex" title="My Account" aria-label="My Account">
-          {% include "includes/icons/user.html" with class="h-4 w-4" %}
+        <a href="{% url 'account' %}" class="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-gold hover:text-gold-deep sm:flex overflow-hidden" title="My Account" aria-label="My Account">
+          {% if user.profile.avatar_url %}
+            <img src="{{ user.profile.avatar_url }}" alt="{{ user.username }}" class="h-full w-full object-cover">
+          {% else %}
+            {% include "includes/icons/user.html" with class="h-4 w-4" %}
+          {% endif %}
         </a>
       {% else %}
         <a href="{% url 'login' %}" class="hidden h-9 shrink-0 items-center justify-center gap-2 rounded-full border border-line bg-white px-3 text-[11px] font-semibold tracking-[0.08em] text-ink transition-colors hover:border-gold hover:text-gold-deep sm:flex sm:px-4" title="Sign in or create an account">

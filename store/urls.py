@@ -29,6 +29,8 @@ urlpatterns = [
     path("register/", views.register_view, name="register"),
     path("logout/", views.logout_view, name="logout"),
     path("account/", views.account_view, name="account"),
+    path("account/avatar/", views.update_profile_avatar_view, name="update_avatar"),
+    path("account/delete/", views.delete_account_view, name="delete_account"),
 
     # Direct category alias /<category>
     path("<slug:category>/", views.direct_category_view, name="direct_category"),

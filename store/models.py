@@ -217,3 +217,28 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product_name}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    avatar_base64 = models.TextField(blank=True)  # Reliable fallback for serverless deployments
+    phone = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=100, default="Delhi", blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+    @property
+    def avatar_url(self):
+        if self.avatar_base64:
+            return self.avatar_base64
+        if self.avatar:
+            try:
+                return self.avatar.url
+            except Exception:
+                pass
+        return ""
+
