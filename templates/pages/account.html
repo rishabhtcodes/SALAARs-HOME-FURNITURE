@@ -6,12 +6,13 @@
 {% block content %}
 {% include "includes/page_hero.html" with title="My Account" eyebrow="Customer Portal" description="View your past orders, delivery statuses, and profile information." image="/banners/1.webp" %}
 
-<section class="bg-cream py-12 sm:py-16 lg:py-20">
+<section class="bg-cream py-10 sm:py-16">
   <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
-    <div class="grid gap-10 lg:grid-cols-[340px_1fr]">
-      <!-- Profile Card -->
-      <div class="space-y-6">
-        <div class="rounded-3xl border border-line bg-white p-7 shadow-soft">
+    <!-- 40% Left (Profile/Actions) & 60% Right (Order History) Desktop Grid -->
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-12 items-start">
+      <!-- Left Column (40% / 5 cols) -->
+      <div class="md:col-span-5 w-full">
+        <div class="rounded-3xl border border-line bg-white p-7 sm:p-8 shadow-soft">
           <!-- Avatar + Info -->
           <div class="flex flex-col items-center text-center border-b border-line pb-6">
             <div class="relative group">
@@ -73,9 +74,9 @@
         </div>
       </div>
 
-      <!-- Order History -->
-      <div>
-        <div class="rounded-3xl border border-line bg-white p-7 shadow-soft">
+      <!-- Right Column (60% / 7 cols) -->
+      <div class="md:col-span-7 w-full">
+        <div class="rounded-3xl border border-line bg-white p-7 sm:p-8 shadow-soft">
           <h3 class="font-display text-xl font-bold text-ink mb-6">Order History</h3>
           {% if orders %}
             <div class="space-y-6">
