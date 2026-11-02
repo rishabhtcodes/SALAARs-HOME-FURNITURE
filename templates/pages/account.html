@@ -5,22 +5,33 @@
 
 {% block extra_head %}
 <style>
-  @media (min-width: 992px) {
+  @media (min-width: 640px) {
     .account-layout-grid {
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: flex-start !important;
+      display: grid !important;
+      grid-template-columns: 4fr 6fr !important;
       gap: 2rem !important;
+      align-items: start !important;
     }
     .account-left-col {
-      width: 38% !important;
-      max-width: 38% !important;
-      flex: 0 0 38% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
     }
     .account-right-col {
-      width: 62% !important;
-      max-width: 62% !important;
-      flex: 1 1 62% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+    }
+  }
+  @media (max-width: 639px) {
+    .account-layout-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 1.5rem !important;
+    }
+    .account-left-col,
+    .account-right-col {
+      width: 100% !important;
     }
   }
 </style>
@@ -31,10 +42,43 @@
 
 <section class="bg-cream py-10 sm:py-16">
   <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
-    <!-- 40% Left (Profile/Actions) & 60% Right (Order History) Desktop Flex/Grid -->
-    <div class="account-layout-grid flex flex-col gap-8 w-full">
+    <!-- Immediate Inline Style block to guarantee 40% Left / 60% Right grid across all caches & screens >= 640px -->
+    <style>
+      @media (min-width: 640px) {
+        .account-layout-grid {
+          display: grid !important;
+          grid-template-columns: 4fr 6fr !important;
+          gap: 2rem !important;
+          align-items: start !important;
+        }
+        .account-left-col {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+        }
+        .account-right-col {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+        }
+      }
+      @media (max-width: 639px) {
+        .account-layout-grid {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 1.5rem !important;
+        }
+        .account-left-col,
+        .account-right-col {
+          width: 100% !important;
+        }
+      }
+    </style>
+
+    <!-- 40% Left (Profile/Actions) & 60% Right (Order History) Grid Container -->
+    <div class="account-layout-grid w-full">
       <!-- Left Column (40% width) -->
-      <div class="account-left-col w-full">
+      <div class="account-left-col">
         <div class="rounded-3xl border border-line bg-white p-7 sm:p-8 shadow-soft">
           <!-- Avatar + Info -->
           <div class="flex flex-col items-center text-center border-b border-line pb-6">
@@ -98,7 +142,7 @@
       </div>
 
       <!-- Right Column (60% width) -->
-      <div class="account-right-col w-full min-w-0">
+      <div class="account-right-col">
         <div class="rounded-3xl border border-line bg-white p-7 sm:p-8 shadow-soft">
           <h3 class="font-display text-xl font-bold text-ink mb-6">Order History</h3>
           {% if orders %}
