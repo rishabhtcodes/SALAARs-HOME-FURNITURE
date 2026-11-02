@@ -42,3 +42,8 @@ video/
 *.avi
 *.mkv
 *.webm
+
+# Academic Project Reports & Formats
+report/
+*REPORT*.md
+*.docx
