@@ -33,6 +33,11 @@ urlpatterns = [
     path("account/avatar/", views.update_profile_avatar_view, name="update_avatar"),
     path("account/delete/", views.delete_account_view, name="delete_account"),
 
+    # Showroom Admin Web Pages (Custom Web Page for marketinghome672@gmail.com)
+    path("showroom-admin/", views.admin_dashboard_view, name="admin_dashboard"),
+    path("showroom-admin/products/add/", views.admin_product_add_view, name="admin_product_add"),
+    path("showroom-admin/products/delete/<int:product_id>/", views.admin_product_delete_view, name="admin_product_delete"),
+
     # Direct category alias /<category>
     path("<slug:category>/", views.direct_category_view, name="direct_category"),
 ]

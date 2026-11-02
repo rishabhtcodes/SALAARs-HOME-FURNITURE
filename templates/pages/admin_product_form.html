@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Add New Product | Showroom Admin | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+<section class="bg-cream py-10 sm:py-16">
+  <div class="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <div class="mb-6 flex items-center gap-2 text-xs text-stone">
+      <a href="{% url 'admin_dashboard' %}" class="hover:text-gold-deep">Showroom Admin</a>
+      <span>→</span>
+      <span class="font-bold text-ink">Add New Furniture Product</span>
+    </div>
+
+    <!-- Form Card -->
+    <div class="overflow-hidden rounded-3xl border border-line bg-white shadow-soft p-7 sm:p-10">
+      <div class="flex items-center justify-between border-b border-line pb-6">
+        <div>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[10px] font-bold text-gold-deep tracking-wider uppercase">
+            Showroom Inventory
+          </span>
+          <h1 class="mt-2 font-display text-2xl font-bold sm:text-3xl text-ink">Add New Product</h1>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="text-xs font-semibold text-stone hover:text-ink underline">
+          Back to List
+        </a>
+      </div>
+
+      <form method="post" action="{% url 'admin_product_add' %}" enctype="multipart/form-data" class="mt-8 space-y-6">
+        {% csrf_token %}
+
+        {% if form.errors %}
+          <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">
+            Please correct the errors indicated below.
+          </div>
+        {% endif %}
+
+        <div>
+          <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Product Name *</label>
+          {{ form.name }}
+          {% if form.name.errors %}<p class="text-xs text-red-600 mt-1">{{ form.name.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Category *</label>
+            {{ form.category }}
+            {% if form.category.errors %}<p class="text-xs text-red-600 mt-1">{{ form.category.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Price (INR) *</label>
+            {{ form.price }}
+            {% if form.price.errors %}<p class="text-xs text-red-600 mt-1">{{ form.price.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+
+        <!-- Product Image Upload or URL -->
+        <div class="rounded-2xl border border-line bg-linen/40 p-5 space-y-4">
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-1">Upload Product Image</label>
+            <p class="text-[11px] text-stone mb-2">Choose an image from your computer (auto-compressed and hosted):</p>
+            {{ form.image_file }}
+          </div>
+          <div class="pt-2 border-t border-line/60">
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-1">Or Existing Image URL / Static Path</label>
+            {{ form.image }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Solid Wood Material</label>
+            {{ form.material }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Finish / Color</label>
+            {{ form.color }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Dimensions</label>
+            {{ form.dimensions }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Availability</label>
+            {{ form.availability }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Delivery Timeline</label>
+            {{ form.delivery_time }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Product Description</label>
+          {{ form.description }}
+        </div>
+
+        <div class="pt-4 border-t border-line flex flex-wrap items-center gap-6">
+          <label class="flex items-center gap-2 text-xs font-semibold text-ink cursor-pointer">
+            {{ form.featured }}
+            <span>Feature on Homepage</span>
+          </label>
+          <label class="flex items-center gap-2 text-xs font-semibold text-ink cursor-pointer">
+            {{ form.best_selling }}
+            <span>Best Seller Tag</span>
+          </label>
+          <label class="flex items-center gap-2 text-xs font-semibold text-ink cursor-pointer">
+            {{ form.is_new }}
+            <span>New Arrival Badge</span>
+          </label>
+        </div>
+
+        <div class="pt-6 border-t border-line flex flex-col sm:flex-row gap-4">
+          <button type="submit" class="btn-gold flex-1 py-3.5 text-center justify-center font-bold text-sm shadow-md">
+            Save & Publish to Showroom
+          </button>
+          <a href="{% url 'admin_dashboard' %}" class="btn-outline-dark py-3.5 text-center justify-center text-xs">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

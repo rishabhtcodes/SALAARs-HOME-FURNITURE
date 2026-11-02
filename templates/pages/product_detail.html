@@ -56,7 +56,11 @@
     <!-- Gallery -->
     <div>
       <button type="button" id="gallery-main-btn" aria-label="Open fullscreen view" class="group relative block w-full cursor-zoom-in overflow-hidden rounded-[24px] bg-beige text-left shadow-soft ring-1 ring-line">
-        <img id="main-product-img" src="{% static product.image|slice:'1:' %}" alt="{{ product.name }} – 1 / {{ gallery|length }}" class="block h-auto w-full transition-transform duration-300 ease-out group-hover:scale-[1.04]" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+        {% if product.image|slice:":4" == "data" or product.image|slice:":4" == "http" %}
+          <img id="main-product-img" src="{{ product.image }}" alt="{{ product.name }} – 1 / {{ gallery|length }}" class="block h-auto w-full transition-transform duration-300 ease-out group-hover:scale-[1.04]" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+        {% else %}
+          <img id="main-product-img" src="{% static product.image|slice:'1:' %}" alt="{{ product.name }} – 1 / {{ gallery|length }}" class="block h-auto w-full transition-transform duration-300 ease-out group-hover:scale-[1.04]" onerror="this.src='{% static 'placeholders/product-placeholder.svg' %}';">
+        {% endif %}
         <span class="pointer-events-none absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/85 text-ink shadow-card backdrop-blur-sm transition-all duration-300 group-hover:bg-gold group-hover:text-ink sm:top-5 sm:right-5" aria-hidden="true">
           {% include "includes/icons/maximize.html" with class="h-4.5 w-4.5" %}
         </span>

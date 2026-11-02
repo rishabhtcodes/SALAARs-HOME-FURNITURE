@@ -2,7 +2,11 @@
 <article class="group flex h-full min-w-0 flex-col overflow-hidden rounded-[16px] bg-white shadow-soft ring-1 ring-line transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:ring-gold/40 sm:rounded-[20px]">
   <!-- Image Frame -->
   <a href="{% url 'product_detail' product.slug %}" class="relative block aspect-[4/3] overflow-hidden bg-beige" aria-label="View details – {{ product.name }}">
-    <img src="{% static product.image|slice:'1:' %}"
+    {% if product.image|slice:":4" == "data" or product.image|slice:":4" == "http" %}
+      <img src="{{ product.image }}"
+    {% else %}
+      <img src="{% static product.image|slice:'1:' %}"
+    {% endif %}
          alt="{{ product.name }} – {{ product.category.name }} – SALAAR's HOME Delhi"
          loading="lazy"
          class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"

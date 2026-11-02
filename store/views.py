@@ -21,7 +21,7 @@ from .models import (
     OrderItem,
     UserProfile,
 )
-from .forms import CheckoutForm, RegisterForm
+from .forms import CheckoutForm, RegisterForm, ProductAdminForm
 from .emails import send_order_confirmation_email, send_welcome_signup_email
 from django.urls import reverse
 import base64
@@ -749,6 +749,107 @@ def delete_account_view(request):
 
 def not_found_view(request, exception=None):
     return render(request, "pages/404.html", status=404)
+
+
+@login_required
+def admin_dashboard_view(request):
+    """
+    Dedicated web page for Showroom Admin (marketinghome672@gmail.com).
+    Enables viewing, searching, adding, and deleting products.
+    """
+    if not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Access restricted. You must be signed in with admin privileges.")
+        return redirect("login")
+
+    query = request.GET.get("q", "").strip()
+    category_filter = request.GET.get("category", "").strip()
+
+    products = Product.objects.select_related("category").all().order_by("-id")
+    if query:
+        products = products.filter(Q(name__icontains=query) | Q(material__icontains=query) | Q(color__icontains=query))
+    if category_filter and category_filter != "all":
+        products = products.filter(category__slug=category_filter)
+
+    categories = Category.objects.all().order_by("name")
+    total_products = Product.objects.count()
+    total_orders = Order.objects.count()
+
+    context = {
+        "products": products,
+        "categories": categories,
+        "query": query,
+        "selected_category": category_filter,
+        "total_products": total_products,
+        "total_orders": total_orders,
+    }
+    return render(request, "pages/admin_dashboard.html", context)
+
+
+@login_required
+def admin_product_add_view(request):
+    """Add a new product to the showroom catalog."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Access restricted to showroom administration.")
+        return redirect("login")
+
+    if request.method == "POST":
+        form = ProductAdminForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            
+            # Handle uploaded image file (compress to base64 for persistent serverless display)
+            image_file = request.FILES.get("image_file")
+            if image_file:
+                try:
+                    img = Image.open(io.BytesIO(image_file.read()))
+                    img.load()
+                    if img.mode != "RGB":
+                        img = img.convert("RGB")
+                    img.thumbnail((800, 800))
+                    buf = io.BytesIO()
+                    img.save(buf, format="JPEG", quality=85, optimize=True)
+                    b64_str = base64.b64encode(buf.getvalue()).decode("ascii")
+                    product.image = f"data:image/jpeg;base64,{b64_str}"
+                except Exception as exc:
+                    messages.error(request, f"Error processing uploaded image: {exc}")
+                    return render(request, "pages/admin_product_form.html", {"form": form, "action": "Add"})
+            elif not product.image:
+                # Default placeholder image if none provided
+                product.image = "/products/bedroom-sets/1.jpeg"
+
+            # Auto-generate item_id and slug if missing
+            from django.utils.text import slugify
+            base_slug = slugify(product.name) or "furniture-item"
+            slug = base_slug
+            counter = 1
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            product.slug = slug
+            product.item_id = f"item-{slug}"
+            product.save()
+
+            messages.success(request, f"Product '{product.name}' has been added successfully to the catalog!")
+            return redirect("admin_dashboard")
+    else:
+        form = ProductAdminForm(initial={"availability": "In Stock", "delivery_time": "7–15 days", "stock": 10})
+
+    return render(request, "pages/admin_product_form.html", {"form": form, "action": "Add"})
+
+
+@login_required
+@require_POST
+def admin_product_delete_view(request, product_id):
+    """Remove an old product from the showroom catalog."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Access restricted to showroom administration.")
+        return redirect("login")
+
+    product = get_object_or_404(Product, id=product_id)
+    product_name = product.name
+    product.delete()
+    messages.success(request, f"Product '{product_name}' has been permanently removed.")
+    return redirect("admin_dashboard")
 
 
 def robots_txt_view(request):

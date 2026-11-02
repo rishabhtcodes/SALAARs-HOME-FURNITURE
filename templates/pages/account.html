@@ -52,8 +52,8 @@
           <!-- Account Actions -->
           <div class="mt-6 space-y-3">
             {% if user.is_staff %}
-              <a href="{% url 'admin:index' %}" class="btn-gold w-full text-center block !bg-ink !text-gold hover:!bg-stone/90">
-                🛡️ Open Admin Panel
+              <a href="{% url 'admin_dashboard' %}" class="btn-gold w-full text-center block !bg-ink !text-gold hover:!bg-stone/90">
+                🛡️ Open Admin Dashboard
               </a>
             {% endif %}
             <a href="{% url 'shop' %}" class="btn-gold w-full text-center block">
