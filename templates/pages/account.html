@@ -3,15 +3,38 @@
 
 {% block title %}My Account | {{ SITE.name }}{% endblock %}
 
+{% block extra_head %}
+<style>
+  @media (min-width: 992px) {
+    .account-layout-grid {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: flex-start !important;
+      gap: 2rem !important;
+    }
+    .account-left-col {
+      width: 38% !important;
+      max-width: 38% !important;
+      flex: 0 0 38% !important;
+    }
+    .account-right-col {
+      width: 62% !important;
+      max-width: 62% !important;
+      flex: 1 1 62% !important;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 {% include "includes/page_hero.html" with title="My Account" eyebrow="Customer Portal" description="View your past orders, delivery statuses, and profile information." image="/banners/1.webp" %}
 
 <section class="bg-cream py-10 sm:py-16">
   <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
-    <!-- 40% Left (Profile/Actions) & 60% Right (Order History) Desktop Grid -->
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-12 items-start">
-      <!-- Left Column (40% / 5 cols) -->
-      <div class="md:col-span-5 w-full">
+    <!-- 40% Left (Profile/Actions) & 60% Right (Order History) Desktop Flex/Grid -->
+    <div class="account-layout-grid flex flex-col gap-8 w-full">
+      <!-- Left Column (40% width) -->
+      <div class="account-left-col w-full">
         <div class="rounded-3xl border border-line bg-white p-7 sm:p-8 shadow-soft">
           <!-- Avatar + Info -->
           <div class="flex flex-col items-center text-center border-b border-line pb-6">
@@ -74,8 +97,8 @@
         </div>
       </div>
 
-      <!-- Right Column (60% / 7 cols) -->
-      <div class="md:col-span-7 w-full">
+      <!-- Right Column (60% width) -->
+      <div class="account-right-col w-full min-w-0">
         <div class="rounded-3xl border border-line bg-white p-7 sm:p-8 shadow-soft">
           <h3 class="font-display text-xl font-bold text-ink mb-6">Order History</h3>
           {% if orders %}
