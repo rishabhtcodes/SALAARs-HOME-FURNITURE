@@ -4,6 +4,16 @@ from .models import Order, Product, Category
 
 
 class ProductAdminForm(forms.ModelForm):
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        required=False,
+        widget=forms.Select(attrs={"class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none"})
+    )
+    new_category_name = forms.CharField(
+        required=False,
+        label="Or Create New Category",
+        widget=forms.TextInput(attrs={"class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none", "placeholder": "e.g. Dining Tables / Study Desks"})
+    )
     image_file = forms.ImageField(
         required=False,
         label="Upload New Image",
@@ -30,7 +40,6 @@ class ProductAdminForm(forms.ModelForm):
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none", "placeholder": "e.g. Royal Teak King Bed Set", "required": True}),
-            "category": forms.Select(attrs={"class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none", "required": True}),
             "price": forms.NumberInput(attrs={"class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none", "placeholder": "120000", "required": True}),
             "image": forms.TextInput(attrs={"class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none", "placeholder": "/products/bedroom-sets/1.jpeg or paste image URL / data URL"}),
             "material": forms.TextInput(attrs={"class": "w-full rounded-xl border border-line bg-linen px-4 py-3 text-sm text-ink placeholder:text-stone/60 focus:border-gold focus:outline-none", "placeholder": "Solid Teak Wood / Sheesham"}),
@@ -44,6 +53,14 @@ class ProductAdminForm(forms.ModelForm):
             "best_selling": forms.CheckboxInput(attrs={"class": "h-4 w-4 rounded border-line text-gold focus:ring-gold"}),
             "is_new": forms.CheckboxInput(attrs={"class": "h-4 w-4 rounded border-line text-gold focus:ring-gold"}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get("category")
+        new_category_name = (cleaned_data.get("new_category_name") or "").strip()
+        if not category and not new_category_name:
+            self.add_error("category", "Please select an existing category or enter a new category name.")
+        return cleaned_data
 
 
 

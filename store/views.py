@@ -796,6 +796,22 @@ def admin_product_add_view(request):
         form = ProductAdminForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
+
+            # Check if creating a new category on the fly
+            from django.utils.text import slugify
+            new_cat_name = (form.cleaned_data.get("new_category_name") or "").strip()
+            if new_cat_name:
+                cat_slug = slugify(new_cat_name) or "custom-category"
+                category, _ = Category.objects.get_or_create(
+                    slug=cat_slug,
+                    defaults={
+                        "name": new_cat_name,
+                        "tagline": f"Handcrafted {new_cat_name}",
+                        "short": f"Solid wood {new_cat_name} collections.",
+                        "delivery_time": "7–20 days",
+                    }
+                )
+                product.category = category
             
             # Handle uploaded image file (compress to base64 for persistent serverless display)
             image_file = request.FILES.get("image_file")

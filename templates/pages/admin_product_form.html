@@ -42,17 +42,28 @@
           {% if form.name.errors %}<p class="text-xs text-red-600 mt-1">{{ form.name.errors.0 }}</p>{% endif %}
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Category *</label>
-            {{ form.category }}
-            {% if form.category.errors %}<p class="text-xs text-red-600 mt-1">{{ form.category.errors.0 }}</p>{% endif %}
+        <!-- Category Selection & New Category Creation -->
+        <div class="rounded-2xl border border-line bg-linen/40 p-5 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Choose Existing Category</label>
+              {{ form.category }}
+              {% if form.category.errors %}<p class="text-xs text-red-600 mt-1">{{ form.category.errors.0 }}</p>{% endif %}
+              <p class="text-[11px] text-stone mt-1">Select from currently established showroom categories.</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold tracking-wider text-gold-deep uppercase mb-2">Or Create New Category</label>
+              {{ form.new_category_name }}
+              {% if form.new_category_name.errors %}<p class="text-xs text-red-600 mt-1">{{ form.new_category_name.errors.0 }}</p>{% endif %}
+              <p class="text-[11px] text-stone mt-1">e.g. Dining Tables, Study Desks, Bookshelves, Consoles.</p>
+            </div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Price (INR) *</label>
-            {{ form.price }}
-            {% if form.price.errors %}<p class="text-xs text-red-600 mt-1">{{ form.price.errors.0 }}</p>{% endif %}
-          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold tracking-wider text-ink uppercase mb-2">Price (INR) *</label>
+          {{ form.price }}
+          {% if form.price.errors %}<p class="text-xs text-red-600 mt-1">{{ form.price.errors.0 }}</p>{% endif %}
         </div>
 
         <!-- Product Image Upload or URL -->
@@ -127,3 +138,4 @@
   </div>
 </section>
 {% endblock %}
+
