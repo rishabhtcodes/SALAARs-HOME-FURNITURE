@@ -1,0 +1,36 @@
+project:
+  name: salaars-home-django
+  baseUrl: https://salaars-home-omega.vercel.app
+  outputDir: .design-qa
+
+design:
+  designMd: DESIGN.md
+  screenSpec: SCREEN_SPEC.md
+
+# Source visual truth for this port is the original Next.js site the project is
+# required to match: https://salaars-home.vercel.app (clone kept for reference).
+code:
+  include:
+    - "templates/**/*.html"
+    - "static/js/**/*.js"
+    - "static/css/**/*.css"
+    - "assets/css/**/*.css"
+  exclude:
+    - "node_modules/**"
+    - "staticfiles/**"
+    - ".venv/**"
+    - "venv/**"
+
+components:
+  allowedRawElementFiles:
+    - "templates/admin/**"
+
+debt:
+  maxHardCodedColors: 40
+  maxArbitraryTailwindValues: 200
+  maxInlineStyles: 10
+  allowedColorValues: ["#000", "#fff", "transparent"]
+
+uiAlignment:
+  runVisualComparison: false
+  requireSelectors: false
