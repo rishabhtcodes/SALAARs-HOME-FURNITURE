@@ -7,7 +7,10 @@ from django.shortcuts import redirect
 urlpatterns = [
     # Custom showroom admin panel directly at /admin/ and /showroom-admin/
     path('admin/', lambda request: redirect('/showroom-admin/', permanent=False)),
-    path('django-backend/', admin.site.urls),
+    # Dedicated SQLite / Django Database Admin portal
+    path('db-admin/', admin.site.urls),
+    path('sqlite-admin/', lambda request: redirect('/db-admin/', permanent=False)),
+    path('django-backend/', lambda request: redirect('/db-admin/', permanent=False)),
     path('', include('store.urls')),
 ]
 

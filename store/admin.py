@@ -11,6 +11,10 @@ from .models import (
     OrderItem,
 )
 
+admin.site.site_header = "SALAAR's HOME – SQLite Database Admin"
+admin.site.site_title = "SQLite Admin Portal"
+admin.site.index_title = "SQLite Database Records & Tables"
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
